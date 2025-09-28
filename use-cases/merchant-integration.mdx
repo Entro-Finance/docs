@@ -6,56 +6,59 @@ icon: "store"
 
 # Merchant Integration
 
-## Why Accept Entro Cards? 💳
+## Payment Processing Architecture
 
-**Lower Fees**: 0.5% vs 2-3% traditional processing  
-**Instant Settlement**: Get funds immediately, not T+2  
-**No Chargebacks**: Blockchain finality = no disputes  
-**Global Customers**: Accept payments from 180+ countries  
+### Settlement Mechanisms
 
-## Integration Options
+**Transaction Finality**  
+Blockchain-based settlement provides deterministic finality without traditional clearing delays.
 
-### 🔌 API Integration
-```javascript
-const entroMerchant = new EntroMerchant({
-  apiKey: 'merchant_key_xxx',
-  webhookUrl: 'https://store.com/webhook'
-});
+**Fee Structure**  
+Streamlined processing eliminates intermediary costs, enabling competitive transaction rates.
 
-entroMerchant.on('payment', (tx) => {
-  console.log(`Received $${tx.amount}`);
-});
-```
+**Global Processing**  
+Unified payment rails across jurisdictions through standardized protocols.
 
-### 🗭 E-commerce Plugins
-- WooCommerce
-- Shopify  
-- Magento
-- BigCommerce
+## Technical Integration
 
-### 🏪 Physical Stores
-- POS terminal integration
-- QR code payments
-- NFC tap-to-pay
+### API Framework
 
-## Merchant Benefits
+RESTful API architecture enables seamless integration with existing merchant infrastructure. OAuth 2.0 authentication ensures secure access control.
 
-| Feature | Traditional | Entro |
-|---------|------------|-------|
-| Settlement | 2-3 days | Instant |
-| Fees | 2-3% | 0.5% |
-| Chargebacks | Yes | No |
-| Global Reach | Limited | 180+ countries |
+### E-commerce Integration
 
-## Getting Started
+Standardized plugins for major e-commerce platforms:
+- WooCommerce compatibility layer
+- Shopify application interface
+- Magento extension framework
+- Custom integration SDKs
 
-1. **Apply**: Submit merchant application
-2. **Verify**: Quick KYB process (24 hours)
-3. **Integrate**: Add API or plugin
-4. **Accept**: Start receiving payments
+### Point-of-Sale Systems
 
-## Support
+Hardware-agnostic integration through:
+- Terminal API protocols
+- QR code generation systems
+- NFC communication standards
 
-📧 merchants@entrofinance.com  
-📚 [Integration Docs](/developer/integration/payment-gateway)  
-👥 Dedicated merchant support team
+## Processing Framework
+
+### Transaction Flow
+
+Merchant-initiated transactions follow standardized authorization, capture, and settlement workflows. Real-time webhook notifications enable reactive business logic.
+
+### Risk Management
+
+Multi-layer fraud detection and transaction monitoring ensure payment integrity while maintaining processing efficiency.
+
+## Implementation Process
+
+### Onboarding Protocol
+
+- Merchant verification through KYB procedures
+- Technical integration assessment
+- API credential provisioning
+- Production environment activation
+
+## Technical Support
+
+Dedicated integration support through developer documentation and technical assistance channels.

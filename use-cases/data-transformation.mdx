@@ -1,0 +1,71 @@
+---
+title: "Data Transformation"
+description: "On-chain data transformation and processing infrastructure"
+icon: "arrows-rotate"
+---
+
+# Data Transformation
+
+## Protocol Data Pipeline
+
+### Transaction Data Processing
+
+Entro Finance implements sophisticated data transformation pipelines for processing on-chain transaction data. The system aggregates, normalizes, and enriches blockchain events for real-time analysis.
+
+### Data Normalization Framework
+
+**Input Processing**  
+Raw transaction data from Solana blockchain undergoes multi-stage transformation to extract relevant payment metadata.
+
+**Schema Standardization**  
+Heterogeneous data sources are normalized into unified schemas for consistent downstream processing.
+
+**Event Aggregation**  
+Micro-transactions are aggregated into logical payment units for efficient settlement reconciliation.
+
+## Transformation Architecture
+
+### Stream Processing Layer
+
+The protocol utilizes event-driven architecture for real-time data transformation. Kafka-style message queues ensure reliable processing of high-volume transaction streams.
+
+### Data Enrichment Pipeline
+
+**Metadata Enhancement**  
+Transaction data is enriched with merchant categorization, geographic indicators, and risk scores.
+
+**Cross-Reference Integration**  
+On-chain data is correlated with off-chain payment network information for comprehensive transaction context.
+
+## Analytics Engine
+
+### Real-Time Processing
+
+Stream processing enables sub-second latency for transaction analysis and risk assessment. Apache Flink-based computation provides exactly-once processing guarantees.
+
+### Batch Processing
+
+Historical data undergoes batch transformation for trend analysis and pattern recognition. MapReduce paradigms optimize large-scale data processing.
+
+## Data Quality Framework
+
+### Validation Protocols
+
+- Schema validation ensures data integrity
+- Duplicate detection prevents double-processing
+- Anomaly detection identifies data quality issues
+- Reconciliation processes verify transformation accuracy
+
+### Error Handling
+
+Comprehensive error handling mechanisms ensure data consistency through retry logic and dead letter queues for failed transformations.
+
+## Integration Interfaces
+
+### API Data Access
+
+RESTful and GraphQL APIs provide access to transformed data with customizable aggregation levels and filtering capabilities.
+
+### Webhook Delivery
+
+Real-time data streams delivered via webhooks enable reactive application architectures.

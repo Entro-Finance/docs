@@ -8,58 +8,38 @@ icon: "fire"
 
 The ENTRO buyback mechanism creates consistent buying pressure and value accrual for token holders through systematic market purchases.
 
-## Revenue Sources
+## Revenue Architecture
 
-### Primary Revenue Streams
+### Protocol Revenue Streams
 
-All protocol revenues contribute to the buyback pool:
+The buyback mechanism is funded through multiple protocol revenue sources:
 
-| Source | Contribution | Monthly Average |
-|--------|--------------|----------------|
-| Card Transaction Fees | 0.5% of volume | $250,000 |
-| Merchant Processing | 0.1-0.5% of volume | $150,000 |
-| ATM Withdrawals | $2.50 per transaction | $75,000 |
-| Premium Subscriptions | $10-50/month | $25,000 |
+**Transaction Processing**  
+Fees generated from payment processing and settlement operations
 
-### Buyback Allocation
+**Network Services**  
+Revenue from API access, premium features, and institutional services
 
-**50% of all protocol revenue** is allocated to buybacks
+**Infrastructure Fees**  
+Charges for white-label solutions and enterprise integrations
+
+### Allocation Framework
+
+A portion of protocol revenue is systematically allocated to buyback operations through smart contract automation
 
 ## Execution Strategy
 
 ### Automated Buyback System
 
-```javascript
-const buybackEngine = {
-  frequency: 'WEEKLY',
-  minBuyAmount: 10000, // $10,000 USD
-  maxSlippage: 0.02, // 2%
-  
-  async executeBuyback(amount) {
-    // Split orders across DEXs
-    const orders = [
-      { dex: 'Raydium', allocation: 0.4 },
-      { dex: 'Orca', allocation: 0.3 },
-      { dex: 'Jupiter', allocation: 0.3 }
-    ];
-    
-    for (const order of orders) {
-      await this.marketBuy({
-        dex: order.dex,
-        amount: amount * order.allocation,
-        maxSlippage: this.maxSlippage
-      });
-    }
-  }
-};
-```
+### Execution Framework
 
-### Buyback Schedule
+Programmatic buyback execution through automated market operations. Smart contract-based execution ensures transparency and verifiability of all buyback transactions.
 
-- **Frequency**: Weekly on random days
-- **Time**: Random times to prevent front-running
-- **Amount**: Based on accumulated revenue
-- **Method**: Market buys across multiple DEXs
+### Buyback Protocol
+
+- **Execution Timing**: Randomized intervals to prevent gaming
+- **Amount Determination**: Algorithmic calculation based on protocol revenue
+- **Distribution Method**: Automated market operations through smart contracts
 
 ## Token Allocation
 
@@ -77,21 +57,16 @@ Bought tokens are allocated as follows:
 
 ## Impact Analysis
 
-### Supply Reduction
+### Supply Dynamics
 
-| Year | Tokens Burned | Supply Remaining | Reduction |
-|------|---------------|------------------|----------|
-| 1 | 25,000,000 | 975,000,000 | 2.5% |
-| 2 | 45,000,000 | 930,000,000 | 7.0% |
-| 3 | 60,000,000 | 870,000,000 | 13.0% |
-| 5 | 85,000,000 | 785,000,000 | 21.5% |
+Systematic token burns create deflationary pressure on total supply. The reduction in circulating tokens compounds over time, creating natural scarcity.
 
-### Price Impact Model
+### Market Mechanics
 
-Buyback creates consistent upward pressure:
-- Weekly buying removes sell pressure
-- Supply reduction increases scarcity
-- Staking rewards reduce circulating supply
+Consistent buyback operations provide structural support for token value through:
+- Regular market absorption of selling pressure
+- Progressive supply reduction through burns
+- Decreased circulation through staking incentives
 
 ## Transparency
 
