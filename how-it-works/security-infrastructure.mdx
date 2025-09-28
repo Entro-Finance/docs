@@ -1,0 +1,260 @@
+---
+title: "Security Infrastructure"
+description: "Multi-layer security protecting user funds and data"
+icon: "shield-halved"
+---
+
+# Security Infrastructure
+
+Entro Finance implements bank-grade security measures combined with blockchain immutability to protect user assets and sensitive information.
+
+## Architecture Overview
+
+### Defense in Depth Strategy
+
+Our security model consists of multiple independent layers, each designed to protect against specific threat vectors. Even if one layer is compromised, others remain intact to protect user assets.
+
+## Smart Contract Security
+
+### Audit History
+
+All smart contracts undergo rigorous third-party audits before deployment:
+
+| Auditor | Audit Date | Findings | Status |
+|---------|------------|----------|--------|
+| CertiK | March 2024 | 2 Low, 0 Critical | Resolved |
+| Halborn | April 2024 | 1 Medium, 3 Low | Resolved |
+| Quantstamp | May 2024 | 0 Issues | Passed |
+
+### Formal Verification
+
+Critical contract functions are formally verified using mathematical proofs to ensure correctness:
+
+- **Invariant Checking**: Balance consistency across operations
+- **Overflow Protection**: Safe math operations throughout
+- **Access Control**: Role-based permissions verified
+- **State Transitions**: Valid state changes only
+
+### Upgrade Mechanisms
+
+Smart contracts use time-locked proxy patterns for safe upgrades:
+
+- **48-hour timelock**: All upgrades subject to delay
+- **Multi-sig requirement**: 3 of 5 signatures needed
+- **Emergency pause**: Instant freeze capability for security events
+
+## Infrastructure Security
+
+### Hardware Security Modules
+
+Sensitive cryptographic operations are performed in HSMs:
+
+- **Card Number Generation**: FIPS 140-2 Level 3 certified HSMs
+- **Key Management**: Hierarchical deterministic key derivation
+- **PIN Storage**: Encrypted and stored separately from card data
+
+### Data Encryption
+
+All sensitive data is encrypted at multiple levels:
+
+**At Rest**:
+- AES-256-GCM encryption for database storage
+- Encrypted backups with separate key management
+- Hardware-encrypted storage drives
+
+**In Transit**:
+- TLS 1.3 for all API communications
+- Certificate pinning for mobile applications
+- End-to-end encryption for sensitive operations
+
+## Access Control
+
+### Multi-Factor Authentication
+
+Users must verify their identity through multiple factors:
+
+1. **Something you know**: Password or PIN
+2. **Something you have**: Device or hardware key
+3. **Something you are**: Biometric verification
+
+### Biometric Security
+
+Advanced biometric options for account protection:
+
+- **Face ID/Touch ID**: Mobile app authentication
+- **WebAuthn**: Hardware key support for web access
+- **Behavioral Analytics**: Typing patterns and usage analysis
+
+## Fraud Detection System
+
+### Real-Time Monitoring
+
+Every transaction passes through our fraud detection engine:
+
+```python
+class FraudDetectionEngine:
+    def __init__(self):
+        self.ml_model = self.load_trained_model()
+        self.rule_engine = RuleBasedDetector()
+        self.anomaly_detector = AnomalyDetector()
+    
+    def analyze_transaction(self, tx):
+        # Machine learning risk score
+        ml_risk = self.ml_model.predict(tx.features)
+        
+        # Rule-based checks
+        rule_violations = self.rule_engine.check(tx)
+        
+        # Anomaly detection
+        anomaly_score = self.anomaly_detector.score(tx)
+        
+        # Combined risk assessment
+        final_risk = self.combine_scores(
+            ml_risk, 
+            rule_violations, 
+            anomaly_score
+        )
+        
+        if final_risk > 0.8:
+            return {'action': 'BLOCK', 'reason': 'High risk'}
+        elif final_risk > 0.5:
+            return {'action': 'CHALLENGE', 'reason': '3DS required'}
+        else:
+            return {'action': 'APPROVE'}
+```
+
+### Pattern Recognition
+
+Our system identifies and blocks suspicious patterns:
+
+- **Velocity Checking**: Unusual transaction frequency
+- **Geographic Impossibility**: Transactions from impossible locations
+- **Amount Anomalies**: Transactions outside normal spending patterns
+- **Merchant Risk**: Known fraudulent merchant detection
+
+## Network Security
+
+### DDoS Protection
+
+Multi-tier protection against distributed attacks:
+
+- **CloudFlare Enterprise**: Global edge network protection
+- **Rate Limiting**: Per-IP and per-account limits
+- **Geographic Filtering**: Block traffic from high-risk regions
+- **Behavioral Analysis**: Identify and block bot traffic
+
+### API Security
+
+Comprehensive API protection measures:
+
+- **OAuth 2.0**: Secure authentication flow
+- **API Keys**: Rotatable keys with granular permissions
+- **Request Signing**: HMAC-SHA256 request signatures
+- **Rate Limiting**: Prevent abuse and ensure fair usage
+
+## Incident Response
+
+### Security Operations Center
+
+24/7 monitoring and response team:
+
+- **Real-time Monitoring**: Continuous system surveillance
+- **Automated Alerts**: Instant notification of anomalies
+- **Rapid Response**: 15-minute response time SLA
+- **Post-Incident Analysis**: Detailed forensics and improvements
+
+### Disaster Recovery
+
+Comprehensive backup and recovery procedures:
+
+- **Geographic Redundancy**: Data replicated across 3+ regions
+- **Hot Standby**: Instant failover capability
+- **Regular Drills**: Monthly disaster recovery testing
+- **RPO/RTO Targets**: 1-hour RPO, 4-hour RTO
+
+## Compliance Framework
+
+### Regulatory Compliance
+
+Adhering to global financial regulations:
+
+- **PCI DSS Level 1**: Card data security standards
+- **SOC 2 Type II**: Security and availability controls
+- **ISO 27001**: Information security management
+- **GDPR**: Data protection and privacy
+
+### AML/KYC Procedures
+
+Comprehensive anti-money laundering controls:
+
+- **Identity Verification**: Document and biometric checks
+- **Transaction Monitoring**: Suspicious activity detection
+- **Sanctions Screening**: Real-time OFAC and global lists
+- **Risk Scoring**: Dynamic risk assessment per user
+
+## User Protection Features
+
+### Transaction Controls
+
+Users have granular control over card security:
+
+- **Instant Freeze**: Disable card immediately via app
+- **Spending Limits**: Set daily, weekly, monthly limits
+- **Merchant Restrictions**: Block specific categories
+- **Geographic Controls**: Limit usage to specific regions
+
+### Insurance Coverage
+
+User funds are protected through multiple insurance layers:
+
+- **On-chain Insurance**: Protocol-level coverage up to $10M
+- **Traditional Insurance**: FDIC-equivalent protection to $250,000
+- **Excess Coverage**: Additional private insurance available
+
+## Security Metrics
+
+### Performance Indicators
+
+| Metric | Target | Current |
+|--------|--------|----------|
+| Fraud Rate | < 0.01% | 0.008% |
+| False Positive Rate | < 1% | 0.7% |
+| Incident Response Time | < 15 min | 12 min |
+| System Uptime | 99.99% | 99.995% |
+
+## Bug Bounty Program
+
+We maintain an active bug bounty program:
+
+### Reward Tiers
+
+- **Critical**: Up to $100,000
+- **High**: Up to $25,000
+- **Medium**: Up to $5,000
+- **Low**: Up to $1,000
+
+### Scope
+
+- Smart contracts
+- Web applications
+- Mobile applications
+- API endpoints
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Global Network"
+    icon="globe"
+    href="/how-it-works/global-network"
+  >
+    Explore our worldwide infrastructure
+  </Card>
+  <Card
+    title="Developer Security"
+    icon="code"
+    href="/developer/authentication"
+  >
+    Implement secure integrations
+  </Card>
+</CardGroup>

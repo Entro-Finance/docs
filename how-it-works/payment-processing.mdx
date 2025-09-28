@@ -1,0 +1,254 @@
+---
+title: "Payment Processing"
+description: "Understanding the payment flow from crypto to merchant settlement"
+icon: "arrows-rotate"
+---
+
+# Payment Processing Infrastructure
+
+Entro Finance leverages a sophisticated payment processing system that enables instant conversion and settlement of cryptocurrency transactions through traditional payment networks.
+
+## Transaction Lifecycle
+
+### Authorization Phase
+
+The authorization process begins when a cardholder initiates a payment. Our system processes the request through multiple validation layers:
+
+1. **Merchant Request**: Payment terminal sends authorization request
+2. **Network Routing**: Request routes through Visa/Mastercard networks
+3. **Issuer Processing**: Entro validates card status and balance
+4. **Blockchain Verification**: Smart contract confirms available funds
+5. **Response Generation**: Approval or decline sent back to merchant
+
+This entire process completes in under 400 milliseconds, matching traditional card processing speeds.
+
+## Currency Conversion Engine
+
+### Real-Time Exchange Rates
+
+Our proprietary conversion engine maintains real-time exchange rates across multiple liquidity sources:
+
+- **Primary Sources**: Raydium, Orca, Jupiter aggregator
+- **Backup Sources**: Centralized exchange price feeds
+- **Oracle Integration**: Pyth Network and Switchboard for price verification
+
+### Zero-Slippage Guarantee
+
+We lock exchange rates at the moment of transaction initiation:
+
+```javascript
+class RateLockManager {
+  constructor() {
+    this.locks = new Map();
+    this.lockDuration = 30000; // 30 seconds
+  }
+
+  async lockRate(transactionId, fromToken, toFiat, amount) {
+    const rate = await this.getCurrentRate(fromToken, toFiat);
+    const lockedUntil = Date.now() + this.lockDuration;
+    
+    this.locks.set(transactionId, {
+      rate,
+      amount,
+      fromToken,
+      toFiat,
+      lockedUntil,
+      fiatAmount: amount * rate
+    });
+    
+    return {
+      transactionId,
+      rate,
+      fiatAmount: amount * rate,
+      validUntil: lockedUntil
+    };
+  }
+}
+```
+
+## Settlement Mechanisms
+
+### Merchant Settlement
+
+Merchants receive payments through standard banking rails:
+
+**Settlement Options**:
+- **T+0 Instant**: Available for verified merchants
+- **T+1 Standard**: Next business day settlement
+- **Weekly Batch**: Accumulated weekly payments
+
+### Network Fee Distribution
+
+Transaction fees are automatically distributed:
+
+| Recipient | Percentage | Purpose |
+|-----------|------------|---------|
+| Liquidity Providers | 0.20% | Maintaining conversion pools |
+| Network Operations | 0.15% | Infrastructure costs |
+| ENTRO Buyback | 0.10% | Token value support |
+| Treasury | 0.05% | Protocol development |
+
+## Fraud Prevention
+
+### Machine Learning Detection
+
+Our ML models analyze transactions in real-time:
+
+- **Pattern Recognition**: Identifies unusual spending patterns
+- **Velocity Checks**: Monitors transaction frequency and amounts
+- **Geographic Analysis**: Validates location-based spending
+- **Merchant Risk Scoring**: Evaluates merchant reputation
+
+### Risk Score Calculation
+
+```python
+class RiskAnalyzer:
+    def calculate_risk_score(self, transaction):
+        score = 0.0
+        
+        # Velocity check
+        recent_tx_count = self.get_recent_transactions(
+            transaction.card_id, 
+            hours=1
+        )
+        if recent_tx_count > 10:
+            score += 0.3
+        
+        # Amount check
+        avg_amount = self.get_average_transaction_amount(transaction.card_id)
+        if transaction.amount > avg_amount * 3:
+            score += 0.2
+        
+        # Geographic check
+        if self.is_unusual_location(transaction):
+            score += 0.2
+        
+        # Merchant category check
+        if transaction.merchant_category in self.high_risk_categories:
+            score += 0.1
+        
+        # Time-based check
+        if self.is_unusual_time(transaction):
+            score += 0.1
+        
+        return min(score, 1.0)  # Cap at 1.0
+    
+    def should_decline(self, score):
+        return score > 0.7
+    
+    def requires_verification(self, score):
+        return 0.4 < score <= 0.7
+```
+
+## Network Integration
+
+### Card Network Compliance
+
+We maintain full compliance with major card networks:
+
+- **PCI DSS Level 1**: Highest security certification
+- **EMV 3DS 2.0**: Enhanced authentication support
+- **Tokenization**: Card numbers never exposed
+- **Network Tokens**: Dynamic security for online transactions
+
+### BIN Sponsorship
+
+Entro Finance operates under regulated BIN sponsors:
+
+- **Primary BIN Range**: 423456 (Visa)
+- **Secondary BIN Range**: 523456 (Mastercard)
+- **Regional BINs**: Localized for specific markets
+
+## Transaction Types
+
+### Supported Transaction Categories
+
+1. **Purchase Transactions**
+   - Online purchases
+   - In-store card present
+   - Contactless NFC payments
+   - Recurring subscriptions
+
+2. **Cash Operations**
+   - ATM withdrawals (selected networks)
+   - Cash back at point of sale
+   - P2P transfers
+
+3. **Special Transactions**
+   - Pre-authorizations (hotels, car rentals)
+   - Partial captures
+   - Reversals and refunds
+
+## Performance Optimization
+
+### Caching Strategy
+
+We implement multi-layer caching for optimal performance:
+
+```rust
+pub struct TransactionCache {
+    l1_cache: Arc<RwLock<HashMap<String, CachedTransaction>>>,
+    l2_cache: Redis,
+    ttl: Duration,
+}
+
+impl TransactionCache {
+    pub async fn get_transaction(&self, tx_id: &str) -> Option<Transaction> {
+        // Check L1 memory cache
+        if let Some(tx) = self.l1_cache.read().await.get(tx_id) {
+            if tx.is_valid() {
+                return Some(tx.data.clone());
+            }
+        }
+        
+        // Check L2 Redis cache
+        if let Ok(tx_data) = self.l2_cache.get(tx_id).await {
+            let tx: Transaction = serde_json::from_str(&tx_data).ok()?;
+            
+            // Update L1 cache
+            self.l1_cache.write().await.insert(
+                tx_id.to_string(),
+                CachedTransaction::new(tx.clone())
+            );
+            
+            return Some(tx);
+        }
+        
+        None
+    }
+}
+```
+
+## International Processing
+
+### Multi-Currency Support
+
+Process transactions in 50+ currencies with automatic conversion and transparent pricing.
+
+### Regional Compliance
+
+Adhering to local regulations:
+
+- **EU**: PSD2 and SCA compliance
+- **US**: FinCEN registration and AML procedures
+- **UK**: FCA authorization
+- **APAC**: Regional licensing requirements
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Security Infrastructure"
+    icon="shield-halved"
+    href="/how-it-works/security-infrastructure"
+  >
+    Explore our security measures
+  </Card>
+  <Card
+    title="Global Network"
+    icon="earth-americas"
+    href="/how-it-works/global-network"
+  >
+    Learn about worldwide coverage
+  </Card>
+</CardGroup>
