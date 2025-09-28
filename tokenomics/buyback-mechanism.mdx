@@ -1,0 +1,123 @@
+---
+title: "Buyback Mechanism"
+description: "How the ENTRO buyback system creates sustainable value"
+icon: "fire"
+---
+
+# Buyback Mechanism
+
+The ENTRO buyback mechanism creates consistent buying pressure and value accrual for token holders through systematic market purchases.
+
+## Revenue Sources
+
+### Primary Revenue Streams
+
+All protocol revenues contribute to the buyback pool:
+
+| Source | Contribution | Monthly Average |
+|--------|--------------|----------------|
+| Card Transaction Fees | 0.5% of volume | $250,000 |
+| Merchant Processing | 0.1-0.5% of volume | $150,000 |
+| ATM Withdrawals | $2.50 per transaction | $75,000 |
+| Premium Subscriptions | $10-50/month | $25,000 |
+
+### Buyback Allocation
+
+**50% of all protocol revenue** is allocated to buybacks
+
+## Execution Strategy
+
+### Automated Buyback System
+
+```javascript
+const buybackEngine = {
+  frequency: 'WEEKLY',
+  minBuyAmount: 10000, // $10,000 USD
+  maxSlippage: 0.02, // 2%
+  
+  async executeBuyback(amount) {
+    // Split orders across DEXs
+    const orders = [
+      { dex: 'Raydium', allocation: 0.4 },
+      { dex: 'Orca', allocation: 0.3 },
+      { dex: 'Jupiter', allocation: 0.3 }
+    ];
+    
+    for (const order of orders) {
+      await this.marketBuy({
+        dex: order.dex,
+        amount: amount * order.allocation,
+        maxSlippage: this.maxSlippage
+      });
+    }
+  }
+};
+```
+
+### Buyback Schedule
+
+- **Frequency**: Weekly on random days
+- **Time**: Random times to prevent front-running
+- **Amount**: Based on accumulated revenue
+- **Method**: Market buys across multiple DEXs
+
+## Token Allocation
+
+Bought tokens are allocated as follows:
+
+### 70% Burned
+- Permanently removed from circulation
+- Sent to null address
+- Creates deflationary pressure
+
+### 30% Staking Rewards
+- Distributed to stakers
+- Incentivizes long-term holding
+- Compounds staking APY
+
+## Impact Analysis
+
+### Supply Reduction
+
+| Year | Tokens Burned | Supply Remaining | Reduction |
+|------|---------------|------------------|----------|
+| 1 | 25,000,000 | 975,000,000 | 2.5% |
+| 2 | 45,000,000 | 930,000,000 | 7.0% |
+| 3 | 60,000,000 | 870,000,000 | 13.0% |
+| 5 | 85,000,000 | 785,000,000 | 21.5% |
+
+### Price Impact Model
+
+Buyback creates consistent upward pressure:
+- Weekly buying removes sell pressure
+- Supply reduction increases scarcity
+- Staking rewards reduce circulating supply
+
+## Transparency
+
+### Public Dashboard
+
+Real-time metrics available at dashboard.entrofinance.com:
+- Total revenue generated
+- Buyback amounts
+- Tokens burned
+- Historical data
+
+### On-Chain Verification
+
+All buyback transactions are verifiable on-chain:
+- Buyback wallet: `BuyBk1111111111111111111111111111111111111`
+- Burn address: `Burn11111111111111111111111111111111111111`
+
+## Future Enhancements
+
+### Dynamic Buyback Rate
+
+Adjust buyback percentage based on market conditions:
+- Bear market: Increase to 75%
+- Bull market: Maintain at 50%
+- Extreme volatility: Pause temporarily
+
+### Cross-Chain Buybacks
+
+Expand buyback operations to other chains where ENTRO trades.
