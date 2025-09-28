@@ -1,0 +1,40 @@
+---
+title: "Authentication"
+description: "Learn how to authenticate with the Entro Finance API"
+---
+
+# Authentication
+
+The Entro Finance API uses API keys to authenticate requests. You can generate API keys from your dashboard.
+
+## API Key Authentication
+
+Include your API key in the request headers:
+
+```http
+GET /api/v1/balances
+Host: api.entrofinance.com
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+```
+
+## Rate Limits
+
+API requests are limited based on your subscription tier:
+
+| Tier | Requests per minute | Requests per day |
+|------|---------------------|------------------|
+| Free | 100 | 10,000 |
+| Pro | 1,000 | 100,000 |
+| Enterprise | 10,000 | 1,000,000 |
+
+## Security Best Practices
+
+<Warning>
+Never expose your API keys in client-side code or public repositories.
+</Warning>
+
+- Store API keys securely in environment variables
+- Rotate keys regularly
+- Use different keys for different environments
+- Monitor API usage for unusual activity
