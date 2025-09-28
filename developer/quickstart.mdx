@@ -1,0 +1,368 @@
+---
+title: "Developer Quick Start"
+description: "Start building with Entro Finance APIs in minutes"
+---
+
+# Developer Quick Start
+
+Get up and running with the Entro Finance developer platform. This guide covers authentication, environment setup, and your first API calls.
+
+## Prerequisites
+
+- Node.js 16+ or Python 3.8+
+- Solana wallet with SOL for gas fees
+- Basic understanding of REST APIs
+
+## Step 1: Get API Credentials
+
+### Register for Developer Account
+
+```bash
+curl -X POST https://api.entrofinance.com/v1/developers/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "dev@example.com",
+    "organization": "Your Company",
+    "use_case": "Card integration for crypto wallet"
+  }'
+```
+
+### Generate API Keys
+
+```javascript
+const { EntroAuth } = require('@entrofinance/sdk');
+
+const auth = new EntroAuth();
+const credentials = await auth.generateApiKeys({
+  environment: 'sandbox', // or 'production'
+  permissions: ['cards:create', 'cards:read', 'transactions:read']
+});
+
+console.log('API Key:', credentials.apiKey);
+console.log('Secret:', credentials.apiSecret);
+// Store these securely!
+```
+
+## Step 2: Install SDK
+
+### JavaScript/TypeScript
+
+```bash
+npm install @entrofinance/sdk
+# or
+yarn add @entrofinance/sdk
+```
+
+### Python
+
+```bash
+pip install entrofinance
+```
+
+### Go
+
+```bash
+go get github.com/entrofinance/go-sdk
+```
+
+## Step 3: Initialize Client
+
+### JavaScript
+
+```javascript
+import { EntroClient } from '@entrofinance/sdk';
+
+const client = new EntroClient({
+  apiKey: process.env.ENTRO_API_KEY,
+  apiSecret: process.env.ENTRO_API_SECRET,
+  environment: 'sandbox', // or 'production'
+  network: 'mainnet-beta'
+});
+
+// Test connection
+const status = await client.ping();
+console.log('API Status:', status); // { status: 'healthy', latency: 23 }
+```
+
+### Python
+
+```python
+from entrofinance import EntroClient
+import os
+
+client = EntroClient(
+    api_key=os.environ['ENTRO_API_KEY'],
+    api_secret=os.environ['ENTRO_API_SECRET'],
+    environment='sandbox'
+)
+
+# Test connection
+status = client.ping()
+print(f"API Status: {status}")
+```
+
+## Step 4: Basic Operations
+
+### Create a Card
+
+```javascript
+async function createFirstCard() {
+  try {
+    // Connect user wallet
+    const wallet = await client.wallets.connect({
+      provider: 'phantom'
+    });
+    
+    // Create virtual card
+    const card = await client.cards.create({
+      type: 'VIRTUAL',
+      currency: 'USD',
+      name: 'My First Card',
+      funding: {
+        source: wallet.address,
+        token: 'USDC',
+        amount: 100
+      },
+      limits: {
+        daily: 500,
+        monthly: 2000,
+        perTransaction: 200
+      }
+    });
+    
+    console.log('Card Created:', {
+      id: card.id,
+      number: card.maskedNumber, // ****1234
+      expiry: card.expiry,
+      status: card.status
+    });
+    
+    return card;
+  } catch (error) {
+    console.error('Error creating card:', error);
+  }
+}
+```
+
+### Process a Payment
+
+```javascript
+async function processPayment(cardId, amount, merchantId) {
+  const payment = await client.payments.process({
+    cardId: cardId,
+    amount: amount,
+    currency: 'USD',
+    merchantId: merchantId,
+    description: 'Test payment',
+    metadata: {
+      orderId: '12345',
+      customerId: 'cust_abc'
+    }
+  });
+  
+  console.log('Payment processed:', payment.transactionId);
+  return payment;
+}
+```
+
+### Listen for Events
+
+```javascript
+// Webhook setup
+client.webhooks.create({
+  url: 'https://your-app.com/webhooks/entro',
+  events: [
+    'card.created',
+    'card.activated',
+    'transaction.completed',
+    'transaction.declined'
+  ],
+  secret: generateWebhookSecret()
+});
+
+// Handle webhook in your server
+app.post('/webhooks/entro', (req, res) => {
+  const signature = req.headers['x-entro-signature'];
+  
+  // Verify webhook signature
+  if (!client.webhooks.verify(req.body, signature)) {
+    return res.status(401).send('Invalid signature');
+  }
+  
+  const event = req.body;
+  
+  switch(event.type) {
+    case 'transaction.completed':
+      console.log(`Transaction ${event.data.id} completed for $${event.data.amount}`);
+      break;
+    case 'transaction.declined':
+      console.log(`Transaction declined: ${event.data.reason}`);
+      break;
+  }
+  
+  res.status(200).send('OK');
+});
+```
+
+## Step 5: Advanced Features
+
+### Batch Operations
+
+```python
+# Create multiple cards at once
+cards_data = [
+    {"type": "VIRTUAL", "currency": "USD", "name": "Marketing"},
+    {"type": "VIRTUAL", "currency": "EUR", "name": "European Ops"},
+    {"type": "PHYSICAL", "currency": "GBP", "name": "UK Office"}
+]
+
+cards = client.cards.create_batch(cards_data)
+for card in cards:
+    print(f"Created card {card.id} with number {card.masked_number}")
+```
+
+### Transaction Analytics
+
+```javascript
+// Get spending insights
+const analytics = await client.analytics.getSpending({
+  cardId: card.id,
+  period: 'last_30_days',
+  groupBy: 'category'
+});
+
+console.log('Spending by category:', analytics.categories);
+// {
+//   'food': 234.50,
+//   'transport': 89.30,
+//   'entertainment': 156.78
+// }
+
+// Export transactions
+const transactions = await client.transactions.export({
+  format: 'csv',
+  dateFrom: '2024-01-01',
+  dateTo: '2024-01-31',
+  cards: ['card_123', 'card_456']
+});
+
+fs.writeFileSync('transactions.csv', transactions.data);
+```
+
+## Environment Configuration
+
+### Sandbox Environment
+
+```javascript
+const sandboxConfig = {
+  apiUrl: 'https://sandbox-api.entrofinance.com',
+  wsUrl: 'wss://sandbox-ws.entrofinance.com',
+  testCards: [
+    { number: '4234567890123456', cvv: '123' }, // Always approves
+    { number: '4234567890123457', cvv: '456' }, // Always declines
+    { number: '4234567890123458', cvv: '789' }  // Random response
+  ],
+  testMerchants: [
+    { id: 'merch_test_001', name: 'Test Coffee Shop' },
+    { id: 'merch_test_002', name: 'Test Online Store' }
+  ]
+};
+```
+
+### Production Environment
+
+```javascript
+const productionConfig = {
+  apiUrl: 'https://api.entrofinance.com',
+  wsUrl: 'wss://ws.entrofinance.com',
+  rateLimit: {
+    requests: 1000,
+    window: '1m'
+  },
+  timeout: 30000,
+  retries: 3
+};
+```
+
+## Error Handling
+
+```javascript
+class EntroErrorHandler {
+  handle(error) {
+    switch(error.code) {
+      case 'INSUFFICIENT_BALANCE':
+        console.error('Not enough funds in wallet');
+        break;
+      
+      case 'CARD_LIMIT_EXCEEDED':
+        console.error('Card spending limit reached');
+        break;
+      
+      case 'INVALID_API_KEY':
+        console.error('Check your API credentials');
+        break;
+      
+      case 'RATE_LIMIT_EXCEEDED':
+        const retryAfter = error.headers['retry-after'];
+        console.error(`Rate limited. Retry after ${retryAfter} seconds`);
+        break;
+      
+      default:
+        console.error('Unexpected error:', error.message);
+    }
+  }
+}
+
+// Usage
+try {
+  await client.cards.create({...});
+} catch (error) {
+  errorHandler.handle(error);
+}
+```
+
+## Best Practices
+
+1. **Security**
+   - Never expose API keys in frontend code
+   - Use environment variables for credentials
+   - Implement webhook signature verification
+   - Enable IP whitelisting in production
+
+2. **Performance**
+   - Cache card details locally
+   - Use batch operations when possible
+   - Implement exponential backoff for retries
+   - Monitor rate limits
+
+3. **Testing**
+   - Use sandbox environment for development
+   - Test edge cases with test cards
+   - Implement comprehensive error handling
+   - Log all API interactions
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card
+    title="API Reference"
+    icon="book"
+    href="/developer/api/cards"
+  >
+    Complete API documentation
+  </Card>
+  <Card
+    title="SDK Guides"
+    icon="code"
+    href="/developer/sdk/javascript"
+  >
+    Language-specific guides
+  </Card>
+  <Card
+    title="Integration Examples"
+    icon="plug"
+    href="/developer/integration/card-issuance"
+  >
+    Real-world integrations
+  </Card>
+</CardGroup>

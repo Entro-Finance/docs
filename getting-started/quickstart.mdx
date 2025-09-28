@@ -1,0 +1,285 @@
+---
+title: "Quick Start"
+description: "Get started with Entro Finance in under 5 minutes"
+---
+
+# Quick Start Guide
+
+This guide will walk you through setting up your first Entro Finance card and making your initial transaction.
+
+## Prerequisites
+
+Before you begin, ensure you have:
+- A Solana wallet (Phantom, Solflare, or Backpack recommended)
+- SOL for transaction fees (minimum 0.01 SOL)
+- USDC or other supported tokens to fund your card
+
+## Step 1: Connect Your Wallet
+
+Navigate to [app.entrofinance.com](https://app.entrofinance.com) and connect your Solana wallet.
+
+```javascript
+// If integrating programmatically
+import { EntroClient } from '@entrofinance/sdk';
+
+const client = new EntroClient({
+  network: 'mainnet-beta'
+});
+
+const wallet = await client.connect({
+  onConnect: (publicKey) => {
+    console.log('Wallet connected:', publicKey.toString());
+  },
+  onDisconnect: () => {
+    console.log('Wallet disconnected');
+  }
+});
+```
+
+## Step 2: Create Your First Card
+
+### Option A: Virtual Card (Instant)
+
+Virtual cards are issued instantly and can be used for online purchases immediately.
+
+```javascript
+const virtualCard = await client.cards.create({
+  type: 'VIRTUAL',
+  currency: 'USD',
+  initialDeposit: {
+    token: 'USDC',
+    amount: 100 // $100 USDC
+  },
+  limits: {
+    daily: 1000,
+    monthly: 5000,
+    perTransaction: 500
+  }
+});
+
+console.log('Card Number:', virtualCard.maskedNumber);
+console.log('Expiry:', virtualCard.expiry);
+// CVV is displayed only once for security
+```
+
+### Option B: Physical Card (3-5 Business Days)
+
+Physical cards require additional verification and shipping information.
+
+```javascript
+const physicalCard = await client.cards.create({
+  type: 'PHYSICAL',
+  currency: 'USD',
+  shipping: {
+    name: 'John Doe',
+    address1: '123 Main St',
+    city: 'New York',
+    state: 'NY',
+    zip: '10001',
+    country: 'US'
+  },
+  initialDeposit: {
+    token: 'USDC',
+    amount: 500
+  }
+});
+```
+
+## Step 3: Fund Your Card
+
+Cards can be funded with multiple tokens. The system automatically converts to your card's currency.
+
+```javascript
+// Fund with USDC
+await client.cards.fund({
+  cardId: virtualCard.id,
+  token: 'USDC',
+  amount: 250
+});
+
+// Fund with SOL
+await client.cards.fund({
+  cardId: virtualCard.id,
+  token: 'SOL',
+  amount: 2 // Will be converted to USD at current rate
+});
+
+// Fund with ENTRO (receives 2% bonus)
+await client.cards.fund({
+  cardId: virtualCard.id,
+  token: 'ENTRO',
+  amount: 1000
+});
+```
+
+## Step 4: Make Your First Transaction
+
+### Online Purchases
+
+Use your virtual card details just like any traditional debit card:
+
+```javascript
+// Get card details (secure session required)
+const cardDetails = await client.cards.getDetails(virtualCard.id);
+
+// Use in any online checkout:
+// Card Number: cardDetails.number
+// Expiry: cardDetails.expiry
+// CVV: cardDetails.cvv
+// Billing ZIP: cardDetails.billingZip
+```
+
+### In-Store Purchases (Physical Card)
+
+Once your physical card arrives:
+1. Activate it through the app or API
+2. Set your PIN
+3. Use at any merchant accepting Visa/Mastercard
+
+```javascript
+// Activate physical card
+await client.cards.activate({
+  cardId: physicalCard.id,
+  lastFourDigits: '1234',
+  cvv: '123'
+});
+
+// Set PIN
+await client.cards.setPin({
+  cardId: physicalCard.id,
+  pin: '1234'
+});
+```
+
+## Step 5: Monitor Transactions
+
+Track all your card activity in real-time:
+
+```javascript
+// Get recent transactions
+const transactions = await client.transactions.list({
+  cardId: virtualCard.id,
+  limit: 10
+});
+
+transactions.forEach(tx => {
+  console.log(`${tx.merchant}: $${tx.amount} - ${tx.status}`);
+});
+
+// Set up webhook for real-time notifications
+await client.webhooks.create({
+  url: 'https://your-app.com/webhooks/entro',
+  events: ['transaction.completed', 'transaction.declined'],
+  cardId: virtualCard.id
+});
+```
+
+## Advanced Features
+
+### Card Controls
+
+```javascript
+// Freeze card temporarily
+await client.cards.freeze(virtualCard.id);
+
+// Update spending limits
+await client.cards.updateLimits({
+  cardId: virtualCard.id,
+  limits: {
+    daily: 500,
+    monthly: 2000
+  }
+});
+
+// Set merchant restrictions
+await client.cards.setRestrictions({
+  cardId: virtualCard.id,
+  blockedCategories: ['gambling', 'atm_withdrawal'],
+  allowedCountries: ['US', 'CA', 'GB']
+});
+```
+
+### Multi-Card Management
+
+```javascript
+// Create multiple cards for different purposes
+const travelCard = await client.cards.create({
+  type: 'VIRTUAL',
+  nickname: 'Travel Card',
+  currency: 'EUR'
+});
+
+const businessCard = await client.cards.create({
+  type: 'VIRTUAL',
+  nickname: 'Business Expenses',
+  currency: 'USD'
+});
+
+// List all cards
+const allCards = await client.cards.list();
+```
+
+## Security Best Practices
+
+1. **Never share card details**: CVV and full card numbers should never be stored or logged
+2. **Use webhooks**: Monitor transactions in real-time for suspicious activity
+3. **Set appropriate limits**: Start with lower limits and increase as needed
+4. **Enable 2FA**: Protect your account with two-factor authentication
+5. **Regular monitoring**: Check transaction history frequently
+
+## Troubleshooting
+
+### Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| Card creation fails | Ensure wallet has sufficient SOL for fees |
+| Transaction declined | Check card balance and daily limits |
+| Funding delayed | Solana network congestion, retry in a few minutes |
+| Card not working | Verify card is activated and not frozen |
+
+### Error Codes
+
+```javascript
+try {
+  await client.cards.create({...});
+} catch (error) {
+  switch(error.code) {
+    case 'INSUFFICIENT_BALANCE':
+      console.log('Not enough funds in wallet');
+      break;
+    case 'LIMIT_EXCEEDED':
+      console.log('Card limit exceeded');
+      break;
+    case 'NETWORK_ERROR':
+      console.log('Solana network issue, please retry');
+      break;
+  }
+}
+```
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card
+    title="API Reference"
+    icon="book"
+    href="/developer/api/cards"
+  >
+    Complete API documentation
+  </Card>
+  <Card
+    title="Use Cases"
+    icon="lightbulb"
+    href="/use-cases/everyday-spending"
+  >
+    Explore what's possible
+  </Card>
+  <Card
+    title="ENTRO Token"
+    icon="coins"
+    href="/tokenomics/entro-token"
+  >
+    Learn about rewards
+  </Card>
+</CardGroup>

@@ -11,68 +11,108 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Whitepaper",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Overview",
+            "group": "Getting Started",
             "pages": [
               "index",
-              "whitepaper/introduction",
-              "whitepaper/vision"
+              "getting-started/what-is-entro",
+              "getting-started/quickstart"
             ]
           },
           {
-            "group": "Technology",
+            "group": "How Entro Works",
             "pages": [
-              "whitepaper/architecture",
-              "whitepaper/security",
-              "whitepaper/scalability"
+              "how-it-works/overview",
+              "how-it-works/card-system",
+              "how-it-works/payment-processing",
+              "how-it-works/security-infrastructure",
+              "how-it-works/global-network"
             ]
           },
           {
-            "group": "Tokenomics",
+            "group": "ENTRO Tokenomics",
             "pages": [
-              "whitepaper/tokenomics",
-              "whitepaper/distribution",
-              "whitepaper/governance"
+              "tokenomics/entro-token",
+              "tokenomics/utility",
+              "tokenomics/distribution",
+              "tokenomics/buyback-mechanism"
             ]
           },
           {
-            "group": "Implementation",
+            "group": "Use Cases",
             "pages": [
-              "whitepaper/roadmap",
-              "whitepaper/team",
-              "whitepaper/partnerships"
+              "use-cases/everyday-spending",
+              "use-cases/cross-border-payments",
+              "use-cases/merchant-integration",
+              "use-cases/enterprise-solutions"
+            ]
+          },
+          {
+            "group": "Investor",
+            "pages": [
+              "investor/value-proposition",
+              "investor/market-analysis",
+              "investor/financial-model",
+              "investor/roadmap"
+            ]
+          },
+          {
+            "group": "Other",
+            "pages": [
+              "other/team",
+              "other/official-links",
+              "other/disclaimer",
+              "other/terms-of-service",
+              "other/privacy-policy"
             ]
           }
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "Developer",
         "groups": [
           {
             "group": "Getting Started",
             "pages": [
-              "api-reference/introduction",
-              "api-reference/authentication",
-              "api-reference/quickstart"
+              "developer/quickstart",
+              "developer/authentication",
+              "developer/environments"
             ]
           },
           {
-            "group": "Core Endpoints",
+            "group": "SDK",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "developer/sdk/javascript",
+              "developer/sdk/python",
+              "developer/sdk/rust",
+              "developer/sdk/go"
             ]
           },
           {
-            "group": "Advanced",
+            "group": "Tools",
             "pages": [
-              "api-reference/rate-limits",
-              "api-reference/errors",
-              "api-reference/sdk"
+              "developer/tools/api-explorer",
+              "developer/tools/webhook-testing",
+              "developer/tools/sandbox"
+            ]
+          },
+          {
+            "group": "Integration",
+            "pages": [
+              "developer/integration/card-issuance",
+              "developer/integration/payment-gateway",
+              "developer/integration/wallet-connect"
+            ]
+          },
+          {
+            "group": "API Reference",
+            "pages": [
+              "developer/api/cards",
+              "developer/api/transactions",
+              "developer/api/wallets",
+              "developer/api/webhooks"
             ]
           }
         ]
