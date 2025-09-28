@@ -1,0 +1,61 @@
+---
+title: "Merchant Integration"
+description: "Accept crypto payments seamlessly"
+icon: "store"
+---
+
+# Merchant Integration
+
+## Why Accept Entro Cards? 💳
+
+**Lower Fees**: 0.5% vs 2-3% traditional processing  
+**Instant Settlement**: Get funds immediately, not T+2  
+**No Chargebacks**: Blockchain finality = no disputes  
+**Global Customers**: Accept payments from 180+ countries  
+
+## Integration Options
+
+### 🔌 API Integration
+```javascript
+const entroMerchant = new EntroMerchant({
+  apiKey: 'merchant_key_xxx',
+  webhookUrl: 'https://store.com/webhook'
+});
+
+entroMerchant.on('payment', (tx) => {
+  console.log(`Received $${tx.amount}`);
+});
+```
+
+### 🗭 E-commerce Plugins
+- WooCommerce
+- Shopify  
+- Magento
+- BigCommerce
+
+### 🏪 Physical Stores
+- POS terminal integration
+- QR code payments
+- NFC tap-to-pay
+
+## Merchant Benefits
+
+| Feature | Traditional | Entro |
+|---------|------------|-------|
+| Settlement | 2-3 days | Instant |
+| Fees | 2-3% | 0.5% |
+| Chargebacks | Yes | No |
+| Global Reach | Limited | 180+ countries |
+
+## Getting Started
+
+1. **Apply**: Submit merchant application
+2. **Verify**: Quick KYB process (24 hours)
+3. **Integrate**: Add API or plugin
+4. **Accept**: Start receiving payments
+
+## Support
+
+📧 merchants@entrofinance.com  
+📚 [Integration Docs](/developer/integration/payment-gateway)  
+👥 Dedicated merchant support team

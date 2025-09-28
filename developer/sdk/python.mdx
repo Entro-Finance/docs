@@ -1,0 +1,48 @@
+---
+title: "Python SDK"
+description: "Python SDK for Entro Finance"
+icon: "python"
+---
+
+# Python SDK
+
+## Installation 📦
+
+```bash
+pip install entrofinance
+```
+
+## Usage
+
+```python
+from entrofinance import EntroClient
+
+client = EntroClient(api_key="sk_test_xxx")
+
+# Create card
+card = client.cards.create(
+    type="VIRTUAL",
+    currency="USD"
+)
+
+print(f"Card created: {card.id}")
+```
+
+## Async Support ⚡
+
+```python
+import asyncio
+from entrofinance import AsyncEntroClient
+
+async def main():
+    client = AsyncEntroClient(api_key="sk_test_xxx")
+    card = await client.cards.create(type="VIRTUAL")
+    print(card.number)
+
+asyncio.run(main())
+```
+
+## Resources
+
+📚 [PyPI Package](https://pypi.org/project/entrofinance)  
+💡 [Examples](https://github.com/entrofinance/python-examples)  

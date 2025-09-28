@@ -1,0 +1,54 @@
+---
+title: "Rust SDK"
+description: "Rust SDK for Solana integration"
+icon: "rust"
+---
+
+# Rust SDK
+
+## Installation 🦀
+
+```toml
+[dependencies]
+entro-finance = "0.1.0"
+```
+
+## Usage
+
+```rust
+use entro_finance::EntroClient;
+
+#[tokio::main]
+async fn main() {
+    let client = EntroClient::new("sk_test_xxx");
+    
+    let card = client
+        .create_card("VIRTUAL", "USD")
+        .await
+        .unwrap();
+        
+    println!("Card ID: {}", card.id);
+}
+```
+
+## Solana Program Integration
+
+```rust
+use anchor_lang::prelude::*;
+
+#[program]
+mod entro_integration {
+    use super::*;
+    
+    pub fn process_card_payment(
+        ctx: Context<ProcessPayment>,
+        amount: u64
+    ) -> Result<()> {
+        // Integration code
+        Ok(())
+    }
+}
+```
+
+📚 [Crates.io](https://crates.io/crates/entro-finance)  
+🔗 [GitHub](https://github.com/entrofinance/rust-sdk)

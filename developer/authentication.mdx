@@ -1,0 +1,64 @@
+---
+title: "Authentication"
+description: "API authentication and security"
+icon: "key"
+---
+
+# Authentication
+
+## API Keys 🔑
+
+All API requests require authentication using API keys.
+
+### Getting Your Keys
+
+1. Sign up at [developers.entrofinance.com](https://developers.entrofinance.com)
+2. Create a new project
+3. Generate API keys
+
+### Using API Keys
+
+```bash
+curl https://api.entrofinance.com/v1/cards \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript
+const entro = new EntroClient({
+  apiKey: process.env.ENTRO_API_KEY,
+  apiSecret: process.env.ENTRO_API_SECRET
+});
+```
+
+## Security Best Practices 🔒
+
+⚠️ **Never expose keys in client-side code**  
+✅ Store keys in environment variables  
+✅ Use different keys for dev/prod  
+✅ Rotate keys regularly  
+✅ Restrict key permissions  
+
+## Rate Limits
+
+| Plan | Requests/min | Requests/day |
+|------|--------------|-------------|
+| Free | 100 | 10,000 |
+| Pro | 1,000 | 100,000 |
+| Enterprise | Custom | Custom |
+
+## Webhook Signatures
+
+Verify webhook authenticity:
+
+```javascript
+const crypto = require('crypto');
+
+function verifyWebhook(payload, signature) {
+  const hash = crypto
+    .createHmac('sha256', WEBHOOK_SECRET)
+    .update(payload)
+    .digest('hex');
+    
+  return hash === signature;
+}
+```
