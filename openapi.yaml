@@ -1,0 +1,1017 @@
+openapi: 3.0.3
+info:
+  title: Entro Finance API
+  description: |
+    Professional crypto card platform built on Solana blockchain infrastructure.
+    
+    ## Authentication
+    All API requests require authentication using API keys in the Authorization header:
+    ```
+    Authorization: Bearer sk_live_your_api_key_here
+    ```
+    
+    ## Base URL
+    ```
+    https://api.entrofinance.com
+    ```
+    
+    ## Rate Limits
+    - Basic: 100 requests/minute, 10,000/day
+    - Professional: 1,000 requests/minute, 100,000/day  
+    - Enterprise: 10,000 requests/minute, 1,000,000/day
+  version: 1.0.0
+  contact:
+    name: Entro Finance API Support
+    url: https://entrofinance.com/support
+    email: api@entrofinance.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.entrofinance.com
+    description: Production server
+  - url: https://sandbox-api.entrofinance.com
+    description: Sandbox server
+
+security:
+  - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              description: Error code
+            message:
+              type: string
+              description: Human readable error message
+            details:
+              type: object
+              description: Additional error details
+
+    ApiKey:
+      type: object
+      required:
+        - id
+        - name
+        - keyHash
+        - permissions
+        - createdAt
+        - status
+      properties:
+        id:
+          type: string
+          description: Unique API key identifier
+          example: "key_7b8a9c0d1e2f3456"
+        name:
+          type: string
+          description: API key name
+          example: "Production API Key"
+        keyHash:
+          type: string
+          description: Masked API key
+          example: "sk_live_...f3456"
+        permissions:
+          type: array
+          items:
+            type: string
+          description: Array of permissions
+          example: ["cards:read", "cards:write", "transactions:read"]
+        lastUsed:
+          type: string
+          format: date-time
+          description: Last usage timestamp
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        expiresAt:
+          type: string
+          format: date-time
+          description: Expiration timestamp
+        status:
+          type: string
+          enum: [active, expired, revoked]
+          description: API key status
+
+    Card:
+      type: object
+      required:
+        - id
+        - type
+        - currency
+        - name
+        - status
+        - cardNumber
+        - expiryDate
+        - balance
+        - limits
+        - network
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Unique card identifier
+          example: "card_9d1e2f3a4b5c6789"
+        type:
+          type: string
+          enum: [virtual, physical]
+          description: Card type
+        currency:
+          type: string
+          enum: [USD, EUR, GBP]
+          description: Card currency
+        name:
+          type: string
+          description: Card display name
+          example: "My Crypto Card"
+        status:
+          type: string
+          enum: [active, frozen, expired, cancelled, pending]
+          description: Card status
+        walletAddress:
+          type: string
+          description: Associated Solana wallet address
+          example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
+        cardNumber:
+          type: string
+          description: Masked card number
+          example: "4532********1234"
+        expiryDate:
+          type: string
+          description: Card expiry date
+          example: "12/27"
+        balance:
+          $ref: '#/components/schemas/Balance'
+        limits:
+          $ref: '#/components/schemas/CardLimits'
+        network:
+          type: string
+          enum: [visa, mastercard]
+          description: Card network
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        activatedAt:
+          type: string
+          format: date-time
+          description: Activation timestamp
+        lastUsed:
+          type: string
+          format: date-time
+          description: Last usage timestamp
+
+    Balance:
+      type: object
+      required:
+        - available
+        - pending
+        - currency
+      properties:
+        available:
+          type: number
+          format: decimal
+          description: Available balance
+          example: 1250.75
+        pending:
+          type: number
+          format: decimal
+          description: Pending balance
+          example: 25.00
+        reserved:
+          type: number
+          format: decimal
+          description: Reserved balance
+          example: 0.00
+        currency:
+          type: string
+          enum: [USD, EUR, GBP]
+          description: Balance currency
+
+    CardLimits:
+      type: object
+      required:
+        - daily
+        - monthly
+        - perTransaction
+        - dailyRemaining
+        - monthlyRemaining
+      properties:
+        daily:
+          type: number
+          format: decimal
+          description: Daily spending limit
+          example: 2000.00
+        monthly:
+          type: number
+          format: decimal
+          description: Monthly spending limit
+          example: 10000.00
+        perTransaction:
+          type: number
+          format: decimal
+          description: Per-transaction limit
+          example: 1000.00
+        dailyRemaining:
+          type: number
+          format: decimal
+          description: Remaining daily limit
+          example: 750.25
+        monthlyRemaining:
+          type: number
+          format: decimal
+          description: Remaining monthly limit
+          example: 8749.25
+
+    Transaction:
+      type: object
+      required:
+        - id
+        - type
+        - status
+        - amount
+        - currency
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Unique transaction identifier
+          example: "tx_7b8a9c0d1e2f3456"
+        type:
+          type: string
+          enum: [payment, funding, withdrawal, refund, fee, reward]
+          description: Transaction type
+        status:
+          type: string
+          enum: [pending, completed, failed, cancelled, declined]
+          description: Transaction status
+        amount:
+          type: number
+          format: decimal
+          description: Transaction amount
+          example: 45.99
+        currency:
+          type: string
+          enum: [USD, EUR, GBP]
+          description: Transaction currency
+        cardId:
+          type: string
+          description: Associated card ID
+          example: "card_9d1e2f3a4b5c6789"
+        merchant:
+          $ref: '#/components/schemas/Merchant'
+        metadata:
+          $ref: '#/components/schemas/TransactionMetadata'
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        processedAt:
+          type: string
+          format: date-time
+          description: Processing timestamp
+        balanceAfter:
+          type: number
+          format: decimal
+          description: Card balance after transaction
+          example: 1204.76
+
+    Merchant:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Merchant name
+          example: "Coffee Shop Downtown"
+        category:
+          type: string
+          description: Merchant category
+          example: "food_and_beverage"
+        mcc:
+          type: string
+          description: Merchant Category Code
+          example: "5812"
+        city:
+          type: string
+          description: Merchant city
+          example: "New York"
+        country:
+          type: string
+          description: Merchant country code
+          example: "US"
+
+    TransactionMetadata:
+      type: object
+      properties:
+        solanaSignature:
+          type: string
+          description: Solana transaction signature
+          example: "4xK8mP9nL7eD2cF5bG1hR6tY3wA8sE4qZ9xV0oI3jU7nM2lK5pQ6rT1yH8fN4gB7"
+        blockHeight:
+          type: integer
+          description: Solana block height
+          example: 245678901
+        slot:
+          type: integer
+          description: Solana slot number
+          example: 245678901
+        confirmations:
+          type: integer
+          description: Number of confirmations
+          example: 32
+
+    Wallet:
+      type: object
+      required:
+        - id
+        - address
+        - status
+        - connectedAt
+      properties:
+        id:
+          type: string
+          description: Unique wallet identifier
+          example: "wallet_9d1e2f3a4b5c6789"
+        address:
+          type: string
+          description: Solana wallet address
+          example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
+        provider:
+          type: string
+          enum: [phantom, solflare, backpack, ledger]
+          description: Wallet provider
+        status:
+          type: string
+          enum: [connected, disconnected]
+          description: Wallet status
+        balances:
+          type: object
+          description: Token balances
+          additionalProperties:
+            type: number
+            format: decimal
+        connectedAt:
+          type: string
+          format: date-time
+          description: Connection timestamp
+        lastSynced:
+          type: string
+          format: date-time
+          description: Last sync timestamp
+
+    Webhook:
+      type: object
+      required:
+        - id
+        - url
+        - events
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Unique webhook identifier
+          example: "webhook_7b8a9c0d1e2f3456"
+        url:
+          type: string
+          format: uri
+          description: Webhook endpoint URL
+          example: "https://yourapp.com/webhooks/entro"
+        events:
+          type: array
+          items:
+            type: string
+          description: Subscribed events
+          example: ["card.created", "transaction.completed"]
+        description:
+          type: string
+          description: Webhook description
+        status:
+          type: string
+          enum: [active, inactive]
+          description: Webhook status
+        secret:
+          type: string
+          description: Webhook secret for signature verification
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+
+paths:
+  # Authentication endpoints
+  /api/auth/keys:
+    get:
+      tags:
+        - Authentication
+      summary: List API keys
+      description: Retrieve all API keys for the authenticated user
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            default: 25
+            maximum: 100
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKeys:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ApiKey'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - Authentication
+      summary: Create API key
+      description: Generate a new API key with specified permissions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - permissions
+              properties:
+                name:
+                  type: string
+                  description: Name for the API key
+                  example: "Development Key"
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of permission strings
+                  example: ["cards:read", "transactions:read"]
+                expiresIn:
+                  type: string
+                  description: Expiration time
+                  example: "1y"
+                  default: "1y"
+      responses:
+        '201':
+          description: API key created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKey:
+                    allOf:
+                      - $ref: '#/components/schemas/ApiKey'
+                      - type: object
+                        properties:
+                          key:
+                            type: string
+                            description: Full API key (only shown once)
+                            example: "sk_test_8c9b0a1d2e3f4567890abcdef1234567"
+
+  /api/auth/keys/{keyId}:
+    delete:
+      tags:
+        - Authentication
+      summary: Revoke API key
+      description: Permanently revoke an API key
+      parameters:
+        - name: keyId
+          in: path
+          required: true
+          description: API key ID to revoke
+          schema:
+            type: string
+            example: "key_7b8a9c0d1e2f3456"
+      responses:
+        '200':
+          description: API key revoked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "API key revoked successfully"
+                  revokedAt:
+                    type: string
+                    format: date-time
+
+  # Cards endpoints
+  /api/cards:
+    get:
+      tags:
+        - Cards
+      summary: List cards
+      description: Retrieve all cards for the authenticated user
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            default: 25
+            maximum: 100
+        - name: status
+          in: query
+          description: Filter by card status
+          schema:
+            type: string
+            enum: [active, frozen, expired, cancelled]
+        - name: type
+          in: query
+          description: Filter by card type
+          schema:
+            type: string
+            enum: [virtual, physical]
+        - name: currency
+          in: query
+          description: Filter by currency
+          schema:
+            type: string
+            enum: [USD, EUR, GBP]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cards:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Card'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+
+    post:
+      tags:
+        - Cards
+      summary: Create card
+      description: Create a new virtual or physical crypto card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - currency
+                - name
+                - walletAddress
+                - limits
+              properties:
+                type:
+                  type: string
+                  enum: [virtual, physical]
+                  description: Card type
+                currency:
+                  type: string
+                  enum: [USD, EUR, GBP]
+                  description: Card currency
+                name:
+                  type: string
+                  description: Display name for the card
+                  example: "My Crypto Card"
+                walletAddress:
+                  type: string
+                  description: Solana wallet address for funding
+                  example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
+                limits:
+                  type: object
+                  required:
+                    - daily
+                    - monthly
+                    - perTransaction
+                  properties:
+                    daily:
+                      type: number
+                      format: decimal
+                      description: Daily spending limit
+                    monthly:
+                      type: number
+                      format: decimal
+                      description: Monthly spending limit
+                    perTransaction:
+                      type: number
+                      format: decimal
+                      description: Per-transaction limit
+                fundingSource:
+                  type: object
+                  description: Initial funding configuration
+                  properties:
+                    token:
+                      type: string
+                      enum: [SOL, USDC, USDT, BTC, ETH]
+                      description: Token to fund with
+                    amount:
+                      type: number
+                      format: decimal
+                      description: Amount to fund
+      responses:
+        '201':
+          description: Card created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  card:
+                    $ref: '#/components/schemas/Card'
+                  transaction:
+                    $ref: '#/components/schemas/Transaction'
+
+  # Transactions endpoints
+  /api/transactions:
+    get:
+      tags:
+        - Transactions
+      summary: List transactions
+      description: Retrieve transaction history for cards and wallets
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 25
+            maximum: 100
+        - name: cardId
+          in: query
+          description: Filter by specific card ID
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Filter by transaction type
+          schema:
+            type: string
+            enum: [payment, funding, withdrawal, refund]
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [pending, completed, failed, cancelled]
+        - name: dateFrom
+          in: query
+          description: Start date filter
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          description: End date filter
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      totalPages:
+                        type: integer
+
+  /api/balance:
+    get:
+      tags:
+        - Transactions
+      summary: Get balance
+      description: Retrieve current account and card balances
+      parameters:
+        - name: cardId
+          in: query
+          description: Get balance for specific card only
+          schema:
+            type: string
+        - name: currency
+          in: query
+          description: Filter by currency
+          schema:
+            type: string
+            enum: [USD, EUR, GBP]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalBalance:
+                    type: object
+                    additionalProperties:
+                      type: number
+                      format: decimal
+                  cards:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Card'
+                  metadata:
+                    type: object
+                    properties:
+                      lastSyncedAt:
+                        type: string
+                        format: date-time
+                      exchangeRates:
+                        type: object
+                        additionalProperties:
+                          type: number
+                          format: decimal
+
+  # Wallets endpoints
+  /api/wallets/connect:
+    post:
+      tags:
+        - Wallets
+      summary: Connect wallet
+      description: Connect a Solana wallet to the platform
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - walletAddress
+                - signature
+                - message
+              properties:
+                walletAddress:
+                  type: string
+                  description: Base58 Solana wallet address
+                  example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
+                signature:
+                  type: string
+                  description: Signed message proving wallet ownership
+                message:
+                  type: string
+                  description: Original message that was signed
+                provider:
+                  type: string
+                  enum: [phantom, solflare, backpack, ledger]
+                  description: Wallet provider
+      responses:
+        '200':
+          description: Wallet connected successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wallet:
+                    $ref: '#/components/schemas/Wallet'
+                  supportedTokens:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        symbol:
+                          type: string
+                        name:
+                          type: string
+                        decimals:
+                          type: integer
+                        mintAddress:
+                          type: string
+                        balance:
+                          type: number
+                          format: decimal
+
+  # Webhooks endpoints
+  /api/webhooks:
+    post:
+      tags:
+        - Webhooks
+      summary: Create webhook
+      description: Create a webhook endpoint for real-time notifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+                - events
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: HTTPS endpoint URL
+                events:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of event types to subscribe to
+                description:
+                  type: string
+                  description: Webhook description
+                secret:
+                  type: string
+                  description: Secret for signature verification
+      responses:
+        '201':
+          description: Webhook created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  webhook:
+                    $ref: '#/components/schemas/Webhook'
+
+  # Analytics endpoints
+  /api/analytics/spending:
+    get:
+      tags:
+        - Analytics
+      summary: Get spending insights
+      description: Retrieve detailed spending analytics and insights
+      parameters:
+        - name: period
+          in: query
+          description: Time period
+          schema:
+            type: string
+            enum: [7d, 30d, 90d, 1y, custom]
+            default: "30d"
+        - name: dateFrom
+          in: query
+          description: Start date for custom period
+          schema:
+            type: string
+            format: date-time
+        - name: dateTo
+          in: query
+          description: End date for custom period
+          schema:
+            type: string
+            format: date-time
+        - name: cardId
+          in: query
+          description: Filter by specific card ID
+          schema:
+            type: string
+        - name: currency
+          in: query
+          description: Currency for analytics
+          schema:
+            type: string
+            enum: [USD, EUR, GBP]
+            default: "USD"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: object
+                    properties:
+                      totalSpent:
+                        type: number
+                        format: decimal
+                      transactionCount:
+                        type: integer
+                      averageTransaction:
+                        type: number
+                        format: decimal
+                      currency:
+                        type: string
+                      period:
+                        type: string
+                  categoryBreakdown:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category:
+                          type: string
+                        name:
+                          type: string
+                        amount:
+                          type: number
+                          format: decimal
+                        percentage:
+                          type: number
+                          format: decimal
+                        transactionCount:
+                          type: integer
+                  trends:
+                    type: object
+                    properties:
+                      weekOverWeek:
+                        type: object
+                        properties:
+                          percentageChange:
+                            type: number
+                            format: decimal
+                          direction:
+                            type: string
+                            enum: [increase, decrease]
+
+tags:
+  - name: Authentication
+    description: API key and OAuth authentication management
+  - name: Cards
+    description: Virtual and physical crypto card management
+  - name: Transactions
+    description: Transaction history and balance management
+  - name: Wallets
+    description: Solana wallet connectivity and management
+  - name: Webhooks
+    description: Real-time event notifications
+  - name: Analytics
+    description: Spending insights and analytics
