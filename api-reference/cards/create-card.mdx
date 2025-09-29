@@ -1,0 +1,277 @@
+---
+title: "Create Card"
+description: "Create a new virtual or physical crypto card"
+---
+
+# Create Card
+
+Create a new virtual or physical card linked to a Solana wallet for crypto spending.
+
+## POST /api/cards
+
+Create a new card with specified configuration and funding options.
+
+<ParamField header="Authorization" type="string" required>
+  Bearer authentication header of the form Bearer &lt;token&gt;, where &lt;token&gt; is your auth token.
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Card type: `virtual` or `physical`
+</ParamField>
+
+<ParamField body="currency" type="string" required>
+  Card currency: `USD`, `EUR`, `GBP`
+</ParamField>
+
+<ParamField body="name" type="string" required>
+  Display name for the card
+</ParamField>
+
+<ParamField body="walletAddress" type="string" required>
+  Solana wallet address for funding
+</ParamField>
+
+<ParamField body="limits" type="object" required>
+  Card spending limits configuration
+  <Expandable>
+    <ParamField body="daily" type="number" required>
+      Daily spending limit in card currency
+    </ParamField>
+    <ParamField body="monthly" type="number" required>
+      Monthly spending limit in card currency
+    </ParamField>
+    <ParamField body="perTransaction" type="number" required>
+      Maximum per-transaction limit
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="fundingSource" type="object" optional>
+  Initial funding configuration
+  <Expandable>
+    <ParamField body="token" type="string" required>
+      Token to fund with: `SOL`, `USDC`, `USDT`, `BTC`, `ETH`
+    </ParamField>
+    <ParamField body="amount" type="number" required>
+      Amount to fund in token units
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="shippingAddress" type="object" optional>
+  Required for physical cards only
+  <Expandable>
+    <ParamField body="name" type="string" required>
+      Recipient full name
+    </ParamField>
+    <ParamField body="street" type="string" required>
+      Street address
+    </ParamField>
+    <ParamField body="city" type="string" required>
+      City
+    </ParamField>
+    <ParamField body="state" type="string" required>
+      State or province
+    </ParamField>
+    <ParamField body="postalCode" type="string" required>
+      Postal or ZIP code
+    </ParamField>
+    <ParamField body="country" type="string" required>
+      ISO country code (e.g., US, GB, DE)
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ResponseExample>
+```json Response
+{
+  "card": {
+    "id": "card_9d1e2f3a4b5c6789",
+    "type": "virtual",
+    "currency": "USD",
+    "name": "My Crypto Card",
+    "status": "active",
+    "walletAddress": "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m",
+    "cardNumber": "4532********1234",
+    "expiryDate": "12/27",
+    "balance": {
+      "available": 250.00,
+      "pending": 0.00,
+      "currency": "USD"
+    },
+    "limits": {
+      "daily": 1000.00,
+      "monthly": 5000.00,
+      "perTransaction": 500.00,
+      "dailyRemaining": 1000.00,
+      "monthlyRemaining": 5000.00
+    },
+    "network": "visa",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "activatedAt": "2024-01-15T10:30:05Z",
+    "metadata": {
+      "programId": "EntroFin1ceProgram1111111111111111111",
+      "accountAddress": "8yLXtg3DX98e08xEoUV6x5b3o4yAq7OW3bK9s0H5rI4n"
+    }
+  },
+  "transaction": {
+    "id": "tx_funding_8c7b6a5d4e3f2910",
+    "type": "funding",
+    "amount": 250.00,
+    "token": "USDC",
+    "tokenAmount": 250.0,
+    "signature": "3Fv7..8nYz",
+    "status": "confirmed",
+    "processedAt": "2024-01-15T10:30:02Z"
+  }
+}
+```
+</ResponseExample>
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://api.entrofinance.com/api/cards \
+  --header 'Authorization: Bearer sk_live_...' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "type": "virtual",
+    "currency": "USD", 
+    "name": "My Crypto Card",
+    "walletAddress": "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m",
+    "limits": {
+      "daily": 1000,
+      "monthly": 5000,
+      "perTransaction": 500
+    },
+    "fundingSource": {
+      "token": "USDC",
+      "amount": 250
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.entrofinance.com/api/cards', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer sk_live_...',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    type: 'virtual',
+    currency: 'USD',
+    name: 'My Crypto Card',
+    walletAddress: '7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m',
+    limits: {
+      daily: 1000,
+      monthly: 5000,
+      perTransaction: 500
+    },
+    fundingSource: {
+      token: 'USDC',
+      amount: 250
+    }
+  })
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.entrofinance.com/api/cards',
+    headers={
+        'Authorization': 'Bearer sk_live_...',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'type': 'virtual',
+        'currency': 'USD',
+        'name': 'My Crypto Card',
+        'walletAddress': '7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m',
+        'limits': {
+            'daily': 1000,
+            'monthly': 5000,
+            'perTransaction': 500
+        },
+        'fundingSource': {
+            'token': 'USDC',
+            'amount': 250
+        }
+    }
+)
+
+data = response.json()
+```
+</RequestExample>
+
+## Supported Tokens
+
+| Token | Network | Minimum Amount | Processing Time |
+|-------|---------|----------------|-----------------|
+| SOL   | Solana  | 0.1 SOL       | 1-2 seconds    |
+| USDC  | Solana  | 1 USDC        | 1-2 seconds    |
+| USDT  | Solana  | 1 USDT        | 1-2 seconds    |
+| BTC   | Bitcoin | 0.001 BTC     | 10-60 minutes  |
+| ETH   | Ethereum| 0.01 ETH      | 2-15 minutes   |
+
+## Error Responses
+
+<ResponseExample>
+```json Insufficient Balance
+{
+  "error": {
+    "code": "INSUFFICIENT_BALANCE",
+    "message": "Insufficient token balance for funding",
+    "details": {
+      "required": 250.0,
+      "available": 100.0,
+      "token": "USDC"
+    }
+  }
+}
+```
+
+```json Invalid Wallet
+{
+  "error": {
+    "code": "INVALID_WALLET_ADDRESS",
+    "message": "The provided wallet address is invalid",
+    "details": {
+      "address": "invalid_address",
+      "expectedFormat": "Base58 Solana address"
+    }
+  }
+}
+```
+
+```json Limit Exceeded
+{
+  "error": {
+    "code": "LIMIT_EXCEEDED",
+    "message": "Daily card limit would be exceeded",
+    "details": {
+      "maxDailyLimit": 10000,
+      "requestedLimit": 15000,
+      "accountTier": "basic"
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Card Networks
+
+- **Virtual Cards**: Visa network with global acceptance
+- **Physical Cards**: Available with Visa or Mastercard
+- **3D Secure**: Supported for enhanced security
+- **Contactless**: NFC payments enabled on physical cards
+
+## Processing Times
+
+- **Virtual Card**: Instant activation (1-2 seconds)
+- **Physical Card**: 5-10 business days shipping
+- **Funding**: Real-time for Solana tokens, varies for BTC/ETH

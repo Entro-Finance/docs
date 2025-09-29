@@ -1,0 +1,144 @@
+---
+title: "Connect Wallet" 
+description: "Connect a Solana wallet to the Entro Finance platform"
+---
+
+# Connect Wallet
+
+Connect a Solana wallet to enable crypto card funding and management.
+
+## POST /api/wallets/connect
+
+Connect a Solana wallet address to the authenticated account.
+
+<ParamField header="Authorization" type="string" required>
+  Bearer authentication header of the form Bearer &lt;token&gt;, where &lt;token&gt; is your auth token.
+</ParamField>
+
+<ParamField body="walletAddress" type="string" required>
+  Base58 Solana wallet address
+</ParamField>
+
+<ParamField body="signature" type="string" required>
+  Signed message proving wallet ownership
+</ParamField>
+
+<ParamField body="message" type="string" required>
+  Original message that was signed
+</ParamField>
+
+<ParamField body="provider" type="string" optional>
+  Wallet provider: `phantom`, `solflare`, `backpack`, `ledger`
+</ParamField>
+
+<ResponseExample>
+```json Response
+{
+  "wallet": {
+    "id": "wallet_9d1e2f3a4b5c6789",
+    "address": "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m",
+    "provider": "phantom",
+    "status": "connected",
+    "balances": {
+      "SOL": 12.5847,
+      "USDC": 2500.00,
+      "USDT": 1000.00,
+      "BTC": 0.0,
+      "ETH": 0.0
+    },
+    "connectedAt": "2024-01-15T10:30:00Z",
+    "lastSynced": "2024-01-15T16:45:23Z"
+  },
+  "supportedTokens": [
+    {
+      "symbol": "SOL",
+      "name": "Solana",
+      "decimals": 9,
+      "mintAddress": "11111111111111111111111111111112",
+      "balance": 12.5847
+    },
+    {
+      "symbol": "USDC", 
+      "name": "USD Coin",
+      "decimals": 6,
+      "mintAddress": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "balance": 2500.00
+    },
+    {
+      "symbol": "USDT",
+      "name": "Tether USD", 
+      "decimals": 6,
+      "mintAddress": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNHB",
+      "balance": 1000.00
+    }
+  ]
+}
+```
+</ResponseExample>
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://api.entrofinance.com/api/wallets/connect \
+  --header 'Authorization: Bearer sk_live_...' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "walletAddress": "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m",
+    "signature": "4xK8mP9nL7eD2cF5bG1hR6tY3wA8sE4qZ9xV0oI3jU7nM2lK5pQ6rT1yH8fN4gB7",
+    "message": "Connect wallet to Entro Finance - 2024-01-15T10:30:00Z",
+    "provider": "phantom"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.entrofinance.com/api/wallets/connect', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer sk_live_...',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    walletAddress: '7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m',
+    signature: '4xK8mP9nL7eD2cF5bG1hR6tY3wA8sE4qZ9xV0oI3jU7nM2lK5pQ6rT1yH8fN4gB7',
+    message: 'Connect wallet to Entro Finance - 2024-01-15T10:30:00Z',
+    provider: 'phantom'
+  })
+});
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.entrofinance.com/api/wallets/connect',
+    headers={
+        'Authorization': 'Bearer sk_live_...',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'walletAddress': '7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m',
+        'signature': '4xK8mP9nL7eD2cF5bG1hR6tY3wA8sE4qZ9xV0oI3jU7nM2lK5pQ6rT1yH8fN4gB7',
+        'message': 'Connect wallet to Entro Finance - 2024-01-15T10:30:00Z',
+        'provider': 'phantom'
+    }
+)
+```
+</RequestExample>
+
+## Supported Wallets
+
+| Wallet | Provider | Type |
+|--------|----------|------|
+| Phantom | `phantom` | Browser Extension/Mobile |
+| Solflare | `solflare` | Browser Extension/Mobile |
+| Backpack | `backpack` | Browser Extension |
+| Ledger | `ledger` | Hardware Wallet |
+
+## Message Signing
+
+The message to sign should follow this format:
+```
+Connect wallet to Entro Finance - {ISO_TIMESTAMP}
+```
+
+Example: `Connect wallet to Entro Finance - 2024-01-15T10:30:00Z`

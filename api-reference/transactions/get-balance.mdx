@@ -1,0 +1,157 @@
+---
+title: "Get Balance"
+description: "Retrieve current account and card balances"
+---
+
+# Get Balance
+
+Retrieve current balance information for the authenticated account and associated cards.
+
+## GET /api/balance
+
+Get comprehensive balance information including all cards and pending transactions.
+
+<ParamField header="Authorization" type="string" required>
+  Bearer authentication header of the form Bearer &lt;token&gt;, where &lt;token&gt; is your auth token.
+</ParamField>
+
+<ParamField query="cardId" type="string" optional>
+  Get balance for specific card only
+</ParamField>
+
+<ParamField query="currency" type="string" optional>
+  Filter by currency: `USD`, `EUR`, `GBP`
+</ParamField>
+
+<ResponseExample>
+```json Response
+{
+  "totalBalance": {
+    "USD": 2547.83,
+    "EUR": 1850.00,
+    "GBP": 0.00
+  },
+  "cards": [
+    {
+      "id": "card_9d1e2f3a4b5c6789",
+      "name": "My Crypto Card",
+      "type": "virtual",
+      "currency": "USD",
+      "balance": {
+        "available": 1547.83,
+        "pending": 50.00,
+        "reserved": 0.00,
+        "total": 1597.83
+      },
+      "limits": {
+        "daily": 2000.00,
+        "monthly": 10000.00,
+        "dailyRemaining": 452.17,
+        "monthlyRemaining": 8452.17
+      },
+      "lastUpdated": "2024-01-15T16:45:23Z"
+    },
+    {
+      "id": "card_8c7b6a5d4e3f2910",
+      "name": "Travel Card",
+      "type": "physical", 
+      "currency": "USD",
+      "balance": {
+        "available": 1000.00,
+        "pending": 0.00,
+        "reserved": 0.00,
+        "total": 1000.00
+      },
+      "limits": {
+        "daily": 1500.00,
+        "monthly": 7500.00,
+        "dailyRemaining": 1500.00,
+        "monthlyRemaining": 7500.00
+      },
+      "lastUpdated": "2024-01-15T12:30:15Z"
+    },
+    {
+      "id": "card_7a4b5c6d9e8f1234",
+      "name": "Europe Card",
+      "type": "virtual",
+      "currency": "EUR", 
+      "balance": {
+        "available": 1850.00,
+        "pending": 0.00,
+        "reserved": 0.00,
+        "total": 1850.00
+      },
+      "limits": {
+        "daily": 1500.00,
+        "monthly": 8000.00,
+        "dailyRemaining": 1500.00,
+        "monthlyRemaining": 6150.00
+      },
+      "lastUpdated": "2024-01-15T14:22:41Z"
+    }
+  ],
+  "pendingTransactions": [
+    {
+      "id": "tx_pending_5f6e7d8c9b0a1234",
+      "type": "funding",
+      "amount": 50.00,
+      "currency": "USD",
+      "cardId": "card_9d1e2f3a4b5c6789",
+      "estimatedCompletion": "2024-01-15T17:00:00Z",
+      "createdAt": "2024-01-15T16:45:30Z"
+    }
+  ],
+  "metadata": {
+    "lastSyncedAt": "2024-01-15T16:45:23Z",
+    "exchangeRates": {
+      "USD": 1.0,
+      "EUR": 0.85,
+      "GBP": 0.78
+    },
+    "totalEquivalentUSD": 4719.65
+  }
+}
+```
+</ResponseExample>
+
+<RequestExample>
+```bash cURL
+curl --request GET \
+  --url https://api.entrofinance.com/api/balance \
+  --header 'Authorization: Bearer sk_live_...'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.entrofinance.com/api/balance', {
+  headers: {
+    'Authorization': 'Bearer sk_live_...',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.entrofinance.com/api/balance',
+    headers={
+        'Authorization': 'Bearer sk_live_...',
+        'Content-Type': 'application/json'
+    }
+)
+
+data = response.json()
+```
+</RequestExample>
+
+## Balance Types
+
+| Type | Description |
+|------|-------------|
+| `available` | Immediately spendable balance |
+| `pending` | Funds being processed or settled |
+| `reserved` | Funds reserved for pending transactions |
+| `total` | Sum of available + pending + reserved |

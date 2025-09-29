@@ -1,0 +1,111 @@
+---
+title: "OAuth 2.0"
+description: "OAuth 2.0 implementation for delegated access"
+---
+
+# OAuth 2.0
+
+OAuth 2.0 implementation for secure delegated access to user resources.
+
+## Authorization Code Flow
+
+Implement OAuth 2.0 authorization code flow for user consent.
+
+### Step 1: Authorization Request
+
+Direct users to the authorization endpoint:
+
+```
+GET https://api.entrofinance.com/oauth/authorize
+  ?response_type=code
+  &client_id=your_client_id
+  &redirect_uri=https://yourapp.com/callback
+  &scope=cards:read transactions:read
+  &state=random_state_string
+```
+
+### Step 2: Token Exchange
+
+## POST /oauth/token
+
+Exchange authorization code for access token.
+
+<ParamField header="Content-Type" type="string" required>
+  application/x-www-form-urlencoded
+</ParamField>
+
+<ParamField body="grant_type" type="string" required>
+  Must be `authorization_code`
+</ParamField>
+
+<ParamField body="code" type="string" required>
+  Authorization code from callback
+</ParamField>
+
+<ParamField body="client_id" type="string" required>
+  Your application client ID
+</ParamField>
+
+<ParamField body="client_secret" type="string" required>
+  Your application client secret
+</ParamField>
+
+<ParamField body="redirect_uri" type="string" required>
+  Must match the redirect URI used in authorization request
+</ParamField>
+
+<ResponseExample>
+```json Response
+{
+  "access_token": "ent_at_7b8a9c0d1e2f3456789abcdef0123456",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "ent_rt_8c9b0a1d2e3f4567890abcdef1234567",
+  "scope": "cards:read transactions:read"
+}
+```
+</ResponseExample>
+
+## Refresh Token Flow
+
+## POST /oauth/token
+
+Refresh an expired access token.
+
+<ParamField body="grant_type" type="string" required>
+  Must be `refresh_token`
+</ParamField>
+
+<ParamField body="refresh_token" type="string" required>
+  Valid refresh token
+</ParamField>
+
+<ParamField body="client_id" type="string" required>
+  Your application client ID
+</ParamField>
+
+<ParamField body="client_secret" type="string" required>
+  Your application client secret
+</ParamField>
+
+<ResponseExample>
+```json Response
+{
+  "access_token": "ent_at_9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "ent_rt_0f1e2d3c4b5a69788f7e6d5c4b3a2918",
+  "scope": "cards:read transactions:read"
+}
+```
+</ResponseExample>
+
+## Available Scopes
+
+| Scope | Description |
+|-------|-------------|
+| `cards:read` | Read card information |
+| `cards:write` | Create and modify cards |
+| `transactions:read` | Read transaction history |
+| `wallets:read` | Read wallet information |
+| `profile:read` | Read user profile information |

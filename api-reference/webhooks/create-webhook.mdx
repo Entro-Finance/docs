@@ -1,0 +1,151 @@
+---
+title: "Create Webhook"
+description: "Create a webhook endpoint for real-time notifications"
+---
+
+# Create Webhook
+
+Create a webhook endpoint to receive real-time notifications about card and transaction events.
+
+## POST /api/webhooks
+
+Create a new webhook endpoint with specified event subscriptions.
+
+<ParamField header="Authorization" type="string" required>
+  Bearer authentication header of the form Bearer &lt;token&gt;, where &lt;token&gt; is your auth token.
+</ParamField>
+
+<ParamField body="url" type="string" required>
+  HTTPS endpoint URL to receive webhook notifications
+</ParamField>
+
+<ParamField body="events" type="array" required>
+  Array of event types to subscribe to
+</ParamField>
+
+<ParamField body="description" type="string" optional>
+  Description of the webhook purpose
+</ParamField>
+
+<ParamField body="secret" type="string" optional>
+  Secret for webhook signature verification
+</ParamField>
+
+<ResponseExample>
+```json Response
+{
+  "webhook": {
+    "id": "webhook_7b8a9c0d1e2f3456",
+    "url": "https://yourapp.com/webhooks/entro",
+    "events": [
+      "card.created",
+      "card.activated", 
+      "transaction.completed",
+      "transaction.declined",
+      "card.frozen"
+    ],
+    "description": "Production webhook for card events",
+    "status": "active",
+    "secret": "whsec_7b8a9c0d1e2f3456789abcdef0123456",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "lastTriggered": null,
+    "deliveryStats": {
+      "totalAttempts": 0,
+      "successfulDeliveries": 0,
+      "failedDeliveries": 0,
+      "averageResponseTime": 0
+    }
+  }
+}
+```
+</ResponseExample>
+
+<RequestExample>
+```bash cURL
+curl --request POST \
+  --url https://api.entrofinance.com/api/webhooks \
+  --header 'Authorization: Bearer sk_live_...' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "url": "https://yourapp.com/webhooks/entro",
+    "events": [
+      "card.created",
+      "transaction.completed",
+      "transaction.declined"
+    ],
+    "description": "Production webhook for card events"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.entrofinance.com/api/webhooks', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer sk_live_...',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    url: 'https://yourapp.com/webhooks/entro',
+    events: [
+      'card.created',
+      'transaction.completed',
+      'transaction.declined'
+    ],
+    description: 'Production webhook for card events'
+  })
+});
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.entrofinance.com/api/webhooks',
+    headers={
+        'Authorization': 'Bearer sk_live_...',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'url': 'https://yourapp.com/webhooks/entro',
+        'events': [
+            'card.created',
+            'transaction.completed', 
+            'transaction.declined'
+        ],
+        'description': 'Production webhook for card events'
+    }
+)
+```
+</RequestExample>
+
+## Available Events
+
+| Event | Description |
+|-------|-------------|
+| `card.created` | New card created |
+| `card.activated` | Card activated and ready for use |
+| `card.frozen` | Card temporarily frozen |
+| `card.unfrozen` | Card unfrozen and reactivated |
+| `transaction.completed` | Transaction successfully processed |
+| `transaction.declined` | Transaction declined by network |
+| `transaction.pending` | Transaction awaiting confirmation |
+| `funding.completed` | Card funding completed |
+| `funding.failed` | Card funding failed |
+| `withdrawal.completed` | Withdrawal completed |
+
+## Webhook Security
+
+Webhooks are signed using HMAC-SHA256. Verify signatures using:
+
+```javascript
+const crypto = require('crypto');
+
+function verifySignature(payload, signature, secret) {
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+    
+  return `sha256=${expectedSignature}` === signature;
+}
+```

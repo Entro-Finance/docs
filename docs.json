@@ -69,6 +69,70 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Authentication",
+            "pages": [
+              "api-reference/authentication/overview",
+              "api-reference/authentication/api-keys",
+              "api-reference/authentication/oauth"
+            ]
+          },
+          {
+            "group": "Cards",
+            "pages": [
+              "api-reference/cards/create-card",
+              "api-reference/cards/list-cards",
+              "api-reference/cards/get-card",
+              "api-reference/cards/update-card",
+              "api-reference/cards/freeze-card",
+              "api-reference/cards/unfreeze-card",
+              "api-reference/cards/get-card-balance"
+            ]
+          },
+          {
+            "group": "Transactions",
+            "pages": [
+              "api-reference/transactions/list-transactions",
+              "api-reference/transactions/get-transaction",
+              "api-reference/transactions/create-transaction",
+              "api-reference/transactions/get-balance",
+              "api-reference/transactions/export-transactions"
+            ]
+          },
+          {
+            "group": "Wallets",
+            "pages": [
+              "api-reference/wallets/connect-wallet",
+              "api-reference/wallets/list-wallets",
+              "api-reference/wallets/get-wallet",
+              "api-reference/wallets/fund-card",
+              "api-reference/wallets/withdraw-funds"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "api-reference/webhooks/create-webhook",
+              "api-reference/webhooks/list-webhooks",
+              "api-reference/webhooks/get-webhook",
+              "api-reference/webhooks/update-webhook",
+              "api-reference/webhooks/delete-webhook",
+              "api-reference/webhooks/verify-signature"
+            ]
+          },
+          {
+            "group": "Analytics",
+            "pages": [
+              "api-reference/analytics/spending-insights",
+              "api-reference/analytics/transaction-metrics",
+              "api-reference/analytics/card-usage"
+            ]
+          }
+        ]
       }
     ],
     "global": {
