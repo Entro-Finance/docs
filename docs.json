@@ -69,53 +69,6 @@
             ]
           }
         ]
-      },
-      {
-        "tab": "Developer",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "developer/quickstart",
-              "developer/authentication",
-              "developer/environments"
-            ]
-          },
-          {
-            "group": "SDK",
-            "pages": [
-              "developer/sdk/javascript",
-              "developer/sdk/python",
-              "developer/sdk/rust",
-              "developer/sdk/go"
-            ]
-          },
-          {
-            "group": "Tools",
-            "pages": [
-              "developer/tools/api-explorer",
-              "developer/tools/webhook-testing",
-              "developer/tools/sandbox"
-            ]
-          },
-          {
-            "group": "Integration",
-            "pages": [
-              "developer/integration/card-issuance",
-              "developer/integration/payment-gateway",
-              "developer/integration/wallet-connect"
-            ]
-          },
-          {
-            "group": "API Reference",
-            "pages": [
-              "developer/api/cards",
-              "developer/api/transactions",
-              "developer/api/wallets",
-              "developer/api/webhooks"
-            ]
-          }
-        ]
       }
     ],
     "global": {
