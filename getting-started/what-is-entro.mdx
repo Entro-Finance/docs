@@ -1,175 +1,53 @@
 ---
 title: "What is Entro Finance?"
 description: "Understanding the core principles and technology behind Entro Finance"
+icon: "road"
 ---
 
 # What is Entro Finance?
 
-Entro Finance represents a paradigm shift in how cryptocurrency integrates with traditional payment systems. By leveraging Solana's high-performance blockchain infrastructure, we've built a comprehensive ecosystem that transforms digital assets into spendable currency through our innovative card system.
+Entro Finance is the bridge between crypto and everyday spending. Built on Solana, we enable users to spend their digital assets anywhere traditional cards work - instantly, securely, and globally.
 
-## Core Technology Stack
+## The Problem
 
-### Blockchain Foundation
-Built on Solana, Entro Finance achieves:
-- **Transaction finality**: 400 milliseconds
-- **Throughput**: 65,000+ transactions per second
-- **Cost efficiency**: Average transaction cost < $0.001
+Crypto adoption faces a major barrier: spending digital assets in the real world remains complicated and limited. Most solutions force users through complex processes or leave funds locked in systems they don't control.
 
-### Smart Contract Architecture
+## Our Solution
 
-```rust
-// Core Entro Finance Program Structure
-use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount, Transfer};
+**Instant Crypto Cards**: Turn your crypto into spendable cards in seconds. No waiting, no complexity - just seamless spending power.
 
-#[program]
-pub mod entro_finance {
-    use super::*;
-    
-    pub fn initialize_card(
-        ctx: Context<InitializeCard>,
-        card_limit: u64,
-        daily_limit: u64,
-    ) -> Result<()> {
-        let card = &mut ctx.accounts.card;
-        card.owner = ctx.accounts.user.key();
-        card.balance = 0;
-        card.limit = card_limit;
-        card.daily_limit = daily_limit;
-        card.daily_spent = 0;
-        card.is_active = true;
-        card.created_at = Clock::get()?.unix_timestamp;
-        
-        emit!(CardCreated {
-            card: card.key(),
-            owner: card.owner,
-            limit: card_limit
-        });
-        
-        Ok(())
-    }
-    
-    pub fn process_payment(
-        ctx: Context<ProcessPayment>,
-        amount: u64,
-        merchant_id: String,
-    ) -> Result<()> {
-        require!(
-            ctx.accounts.card.is_active,
-            ErrorCode::CardInactive
-        );
-        
-        require!(
-            amount <= ctx.accounts.card.daily_limit - ctx.accounts.card.daily_spent,
-            ErrorCode::DailyLimitExceeded
-        );
-        
-        // Transfer tokens from card wallet to merchant
-        let cpi_accounts = Transfer {
-            from: ctx.accounts.card_wallet.to_account_info(),
-            to: ctx.accounts.merchant_wallet.to_account_info(),
-            authority: ctx.accounts.card_authority.to_account_info(),
-        };
-        
-        let cpi_program = ctx.accounts.token_program.to_account_info();
-        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-        
-        token::transfer(cpi_ctx, amount)?;
-        
-        // Update card statistics
-        ctx.accounts.card.daily_spent += amount;
-        ctx.accounts.card.total_spent += amount;
-        
-        Ok(())
-    }
-}
-```
+**Global Acceptance**: Works everywhere Visa and Mastercard are accepted, both online and in-store.
 
-## Platform Components
+**True Control**: Your keys, your funds, your control. We don't hold your assets.
 
-### 1. Card Management System
-Our card infrastructure provides:
-- **Virtual cards**: Instant issuance and activation
-- **Physical cards**: Available in select markets
-- **Multi-card support**: Manage multiple cards for different use cases
-- **Real-time controls**: Set limits, freeze/unfreeze instantly
+## Core Features
 
-### 2. Payment Processing Layer
-- **Global acceptance**: Works with existing payment networks
-- **Instant settlement**: Transactions settle in seconds
-- **Currency conversion**: Automatic crypto-to-fiat conversion
-- **Zero slippage**: Fixed rates at point of transaction
+### Lightning Fast
+- Built on Solana for 400ms transaction finality
+- Instant card creation and funding
+- Real-time transaction notifications
 
-### 3. Security Framework
-- **Multi-signature wallets**: Enhanced security for high-value accounts
-- **Biometric authentication**: Face ID and fingerprint support
-- **Transaction monitoring**: AI-powered fraud detection
-- **Insurance coverage**: User funds protected up to $250,000
+### Universally Accepted
+- Virtual cards for online purchases
+- Physical cards for in-person transactions  
+- Works at millions of merchants worldwide
 
-## Integration Points
+### Completely Secure
+- Multi-signature security protocols
+- Bank-level security infrastructure
+- Real-time fraud monitoring
 
-### Wallet Connectivity
-```javascript
-// Example wallet integration
-import { EntroFinance } from '@entrofinance/sdk';
-import { Connection, PublicKey } from '@solana/web3.js';
+## Why Choose Entro?
 
-const entro = new EntroFinance({
-  network: 'mainnet-beta',
-  rpcEndpoint: 'https://api.mainnet-beta.solana.com'
-});
+**For Crypto Users**: Finally spend your digital assets as easily as cash, anywhere in the world.
 
-// Connect wallet
-const wallet = await entro.connectWallet({
-  provider: 'phantom', // or 'solflare', 'backpack', etc.
-  onConnect: (publicKey) => {
-    console.log('Connected:', publicKey.toString());
-  }
-});
+**For Merchants**: Accept crypto payments with 0.5% fees (vs 2-3% traditional) and instant settlement.
 
-// Create new card
-const card = await entro.createCard({
-  type: 'virtual',
-  limit: 5000, // USD
-  currency: 'USD',
-  funding: {
-    token: 'USDC',
-    amount: 1000
-  }
-});
-```
+**For Developers**: Integrate crypto payments into any application with our simple APIs.
 
-## Ecosystem Benefits
+## Getting Started
 
-### For Users
-- **Instant liquidity**: Convert crypto to spendable funds immediately
-- **No KYC delays**: Streamlined onboarding process
-- **Global acceptance**: Use anywhere traditional cards work
-- **Rewards program**: Earn ENTRO tokens on every transaction
-
-### For Merchants
-- **Lower fees**: 0.5% vs traditional 2-3% processing fees
-- **Instant settlement**: Receive funds immediately
-- **No chargebacks**: Blockchain finality eliminates disputes
-- **Global customers**: Accept payments from anywhere
-
-### For Developers
-- **Open APIs**: Full access to platform functionality
-- **SDK support**: JavaScript, Python, Rust, Go
-- **Sandbox environment**: Test without real funds
-- **Revenue sharing**: Earn from applications built on Entro
-
-## Technical Specifications
-
-| Component | Specification |
-|-----------|--------------|
-| Blockchain | Solana |
-| Token Standard | SPL |
-| Smart Contract Language | Rust (Anchor Framework) |
-| API Protocol | REST + WebSocket |
-| Supported Wallets | Phantom, Solflare, Backpack, Ledger |
-| Card Networks | Visa, Mastercard |
-| Compliance | PCI DSS Level 1 |
+Ready to bridge the gap between your crypto and everyday spending?
 
 ## Next Steps
 
