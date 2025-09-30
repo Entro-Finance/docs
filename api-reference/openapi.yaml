@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  title: Entro Finance API
+  description: API documentation for Entro Finance services
+  version: 1.0.0
+servers:
+  - url: https://api.entro.finance
+    description: Production server
+  - url: https://staging-api.entro.finance
+    description: Staging server
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Check if the API is running
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  timestamp:
+                    type: string
+                    format: date-time
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
