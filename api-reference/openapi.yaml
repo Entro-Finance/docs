@@ -1,19 +1,31 @@
 openapi: 3.0.0
 info:
   title: Entro Finance API
-  description: Professional cryptocurrency card platform API
+  description: Professional cryptocurrency card platform API for managing virtual and physical cards, transactions, and token operations
   version: 2.1.0
+  contact:
+    name: Entro Finance API Support
+    url: https://entro.finance/support
+    email: api@entro.finance
+
 servers:
   - url: https://api.entro.finance/v2
+    description: Production server
+  - url: https://sandbox-api.entro.finance/v2
+    description: Sandbox server
+
+security:
+  - BearerAuth: []
 
 paths:
-  /api/keys:
+  # Authentication Management
+  /auth/tokens:
     get:
       tags:
-        - API Keys
-      summary: Get API keys
-      description: List all API keys for the authenticated user
-      operationId: getApiKeys
+        - Authentication
+      summary: Get auth tokens
+      description: List all authentication tokens for the current user
+      operationId: getAuthTokens
       parameters:
         - name: page
           in: query
@@ -31,32 +43,35 @@ paths:
             default: "25"
       responses:
         "200":
-          description: List of API keys retrieved successfully
+          description: Authentication tokens retrieved successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  apiKeys:
+                  tokens:
                     type: array
                     items:
                       type: object
                       properties:
                         id:
                           type: string
-                          example: "key_7b8a9c0d1e2f3456"
+                          example: "token_abc123def456"
                         name:
                           type: string
-                          example: "Production API Key"
-                        key:
-                          type: string
-                          example: "sk_live_...f3456"
+                          example: "Mobile App Token"
                         permissions:
                           type: array
                           items:
                             type: string
-                          example: ["cards:read", "cards:write"]
+                          example: ["cards:read", "cards:write", "transactions:read"]
+                        lastUsed:
+                          type: string
+                          format: date-time
                         createdAt:
+                          type: string
+                          format: date-time
+                        expiresAt:
                           type: string
                           format: date-time
                         status:
@@ -67,7 +82,7 @@ paths:
                     example: 5
                   total:
                     type: number
-                    example: 42
+                    example: 12
                   page:
                     type: number
                     example: 1
@@ -77,10 +92,10 @@ paths:
 
     post:
       tags:
-        - API Keys
-      summary: Post API keys
-      description: Create a new API key with specified permissions.
-      operationId: postApiKeys
+        - Authentication
+      summary: Post auth tokens
+      description: Create a new authentication token with specified permissions
+      operationId: postAuthTokens
       requestBody:
         required: true
         content:
@@ -90,26 +105,48 @@ paths:
               properties:
                 name:
                   type: string
-                  example: "Production Card Management"
+                  example: "Production Access Token"
                 permissions:
                   type: array
                   items:
                     type: string
-                  example: ["cards:read", "cards:write"]
+                  example: ["cards:read", "cards:write", "transactions:read"]
+                expiresIn:
+                  type: string
+                  enum: ["30d", "90d", "1y", "never"]
+                  example: "90d"
       responses:
         "201":
-          description: API key created successfully
+          description: Authentication token created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiKey'
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "entro_live_sk_1234567890abcdef"
+                  id:
+                    type: string
+                    example: "token_abc123def456"
+                  name:
+                    type: string
+                    example: "Production Access Token"
+                  permissions:
+                    type: array
+                    items:
+                      type: string
+                    example: ["cards:read", "cards:write"]
+                  createdAt:
+                    type: string
+                    format: date-time
 
     put:
       tags:
-        - API Keys
-      summary: Put API keys
-      description: Update an existing API key's permissions and settings.
-      operationId: putApiKeys
+        - Authentication
+      summary: Put auth tokens
+      description: Update authentication token permissions and settings
+      operationId: putAuthTokens
       requestBody:
         required: true
         content:
@@ -117,9 +154,12 @@ paths:
             schema:
               type: object
               properties:
-                keyId:
+                tokenId:
                   type: string
-                  example: "key_7b8a9c0d1e2f3456"
+                  example: "token_abc123def456"
+                name:
+                  type: string
+                  example: "Updated Token Name"
                 permissions:
                   type: array
                   items:
@@ -127,36 +167,48 @@ paths:
                   example: ["cards:read", "transactions:read"]
       responses:
         "200":
-          description: API key updated successfully
+          description: Authentication token updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiKey'
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "token_abc123def456"
+                  name:
+                    type: string
+                    example: "Updated Token Name"
+                  permissions:
+                    type: array
+                    items:
+                      type: string
+                    example: ["cards:read", "transactions:read"]
 
     delete:
       tags:
-        - API Keys
-      summary: Delete API keys
-      description: Revoke an API key permanently.
-      operationId: deleteApiKeys
+        - Authentication
+      summary: Delete auth tokens
+      description: Revoke authentication token permanently
+      operationId: deleteAuthTokens
       parameters:
-        - name: keyId
+        - name: tokenId
           in: query
           required: true
           schema:
             type: string
-            example: "key_7b8a9c0d1e2f3456"
+            example: "token_abc123def456"
       responses:
         "204":
-          description: API key deleted successfully
+          description: Authentication token revoked successfully
 
-  /api/keys/bulk/revoke:
+  /auth/tokens/bulk/revoke:
     post:
       tags:
-        - API Keys
-      summary: Post API keys bulk revoke
-      description: Revoke multiple API keys in a single request.
-      operationId: postApiKeysBulkRevoke
+        - Authentication
+      summary: Post auth tokens bulk revoke
+      description: Revoke multiple authentication tokens in a single request
+      operationId: postAuthTokensBulkRevoke
       requestBody:
         required: true
         content:
@@ -164,14 +216,14 @@ paths:
             schema:
               type: object
               properties:
-                keyIds:
+                tokenIds:
                   type: array
                   items:
                     type: string
-                  example: ["key_123", "key_456"]
+                  example: ["token_123", "token_456", "token_789"]
       responses:
         "200":
-          description: Bulk revocation completed
+          description: Bulk token revocation completed
           content:
             application/json:
               schema:
@@ -179,33 +231,44 @@ paths:
                 properties:
                   revoked:
                     type: number
-                    example: 2
+                    example: 3
                   failed:
                     type: number
                     example: 0
 
-  # Card Management
-  /api/cards:
+  # Card Operations
+  /cards:
     get:
       tags:
-        - Card Management
+        - Card Operations
       summary: Get cards
-      description: List all cards for the authenticated user.
+      description: Retrieve all cards associated with the authenticated user
       operationId: getCards
       parameters:
         - name: status
           in: query
+          description: Filter cards by status
+          required: false
           schema:
             type: string
-            enum: [active, frozen, expired, cancelled]
+            enum: [active, frozen, expired, cancelled, pending]
         - name: type
           in: query
+          description: Filter cards by type
+          required: false
           schema:
             type: string
             enum: [virtual, physical]
+        - name: currency
+          in: query
+          description: Filter cards by currency
+          required: false
+          schema:
+            type: string
+            enum: [USD, EUR, GBP]
       responses:
         "200":
-          description: List of cards retrieved successfully
+          description: Cards retrieved successfully
           content:
             application/json:
               schema:
@@ -214,13 +277,48 @@ paths:
                   cards:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Card'
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "card_abc123def456"
+                        type:
+                          type: string
+                          enum: [virtual, physical]
+                          example: "virtual"
+                        currency:
+                          type: string
+                          example: "USD"
+                        name:
+                          type: string
+                          example: "Shopping Card"
+                        status:
+                          type: string
+                          enum: [active, frozen, expired, cancelled, pending]
+                          example: "active"
+                        cardNumber:
+                          type: string
+                          example: "4532********1234"
+                        expiryDate:
+                          type: string
+                          example: "12/27"
+                        balance:
+                          type: number
+                          format: decimal
+                          example: 1250.75
+                        network:
+                          type: string
+                          enum: [visa, mastercard]
+                          example: "visa"
+                        createdAt:
+                          type: string
+                          format: date-time
 
     post:
       tags:
-        - Card Management
+        - Card Operations
       summary: Post cards
-      description: Create a new virtual or physical card.
+      description: Create a new virtual or physical cryptocurrency card
       operationId: postCards
       requestBody:
         required: true
@@ -232,25 +330,57 @@ paths:
                 type:
                   type: string
                   enum: [virtual, physical]
+                  example: "virtual"
                 currency:
                   type: string
                   enum: [USD, EUR, GBP]
+                  example: "USD"
                 name:
                   type: string
-                  example: "My Shopping Card"
+                  example: "Travel Card"
+                initialBalance:
+                  type: number
+                  format: decimal
+                  example: 500.00
+                network:
+                  type: string
+                  enum: [visa, mastercard]
+                  example: "visa"
       responses:
         "201":
           description: Card created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Card'
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "card_abc123def456"
+                  type:
+                    type: string
+                    example: "virtual"
+                  currency:
+                    type: string
+                    example: "USD"
+                  name:
+                    type: string
+                    example: "Travel Card"
+                  status:
+                    type: string
+                    example: "pending"
+                  network:
+                    type: string
+                    example: "visa"
+                  createdAt:
+                    type: string
+                    format: date-time
 
     put:
       tags:
-        - Card Management
+        - Card Operations
       summary: Put cards
-      description: Update card settings and preferences.
+      description: Update card settings and configurations
       operationId: putCards
       requestBody:
         required: true
@@ -261,26 +391,48 @@ paths:
               properties:
                 cardId:
                   type: string
-                  example: "card_9d1e2f3a4b5c6789"
+                  example: "card_abc123def456"
                 name:
                   type: string
                   example: "Updated Card Name"
                 status:
                   type: string
                   enum: [active, frozen]
+                  example: "active"
+                limits:
+                  type: object
+                  properties:
+                    dailyLimit:
+                      type: number
+                      format: decimal
+                      example: 2000.00
+                    monthlyLimit:
+                      type: number
+                      format: decimal
+                      example: 10000.00
       responses:
         "200":
           description: Card updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Card'
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "card_abc123def456"
+                  name:
+                    type: string
+                    example: "Updated Card Name"
+                  status:
+                    type: string
+                    example: "active"
 
     delete:
       tags:
-        - Card Management
+        - Card Operations
       summary: Delete cards
-      description: Cancel a card permanently.
+      description: Permanently cancel a card
       operationId: deleteCards
       parameters:
         - name: cardId
@@ -288,17 +440,17 @@ paths:
           required: true
           schema:
             type: string
-            example: "card_9d1e2f3a4b5c6789"
+            example: "card_abc123def456"
       responses:
         "204":
           description: Card cancelled successfully
 
-  /api/cards/freeze:
+  /cards/freeze:
     post:
       tags:
-        - Card Management
+        - Card Operations
       summary: Post cards freeze
-      description: Temporarily freeze a card to prevent transactions.
+      description: Temporarily freeze a card to prevent all transactions
       operationId: postCardsFreeze
       requestBody:
         required: true
@@ -309,38 +461,71 @@ paths:
               properties:
                 cardId:
                   type: string
-                  example: "card_9d1e2f3a4b5c6789"
+                  example: "card_abc123def456"
+                reason:
+                  type: string
+                  example: "Suspicious activity detected"
       responses:
         "200":
           description: Card frozen successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Card'
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "card_abc123def456"
+                  status:
+                    type: string
+                    example: "frozen"
+                  frozenAt:
+                    type: string
+                    format: date-time
 
-  # User Transactions
-  /api/transactions:
+  # Transaction History
+  /transactions/history:
     get:
       tags:
-        - User Transactions
-      summary: Get transactions
-      description: Retrieve transaction history for the authenticated user.
-      operationId: getTransactions
+        - Transaction History
+      summary: Get transactions history
+      description: Retrieve comprehensive transaction history for the authenticated user
+      operationId: getTransactionsHistory
       parameters:
         - name: cardId
           in: query
+          description: Filter transactions by specific card
+          required: false
           schema:
             type: string
         - name: status
           in: query
+          description: Filter transactions by status
+          required: false
           schema:
             type: string
-            enum: [pending, completed, failed, cancelled]
+            enum: [pending, completed, failed, cancelled, refunded]
+        - name: startDate
+          in: query
+          description: Start date for transaction search
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: End date for transaction search
+          required: false
+          schema:
+            type: string
+            format: date
         - name: limit
           in: query
+          description: Number of transactions to return
+          required: false
           schema:
             type: string
-            default: "25"
+            default: "50"
       responses:
         "200":
           description: Transaction history retrieved successfully
@@ -352,37 +537,298 @@ paths:
                   transactions:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Transaction'
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "txn_abc123def456"
+                        cardId:
+                          type: string
+                          example: "card_abc123def456"
+                        amount:
+                          type: number
+                          format: decimal
+                          example: 45.99
+                        currency:
+                          type: string
+                          example: "USD"
+                        merchant:
+                          type: string
+                          example: "Amazon Web Services"
+                        category:
+                          type: string
+                          example: "Cloud Services"
+                        status:
+                          type: string
+                          enum: [pending, completed, failed, cancelled, refunded]
+                          example: "completed"
+                        entroReward:
+                          type: number
+                          format: decimal
+                          example: 0.46
+                        processingFee:
+                          type: number
+                          format: decimal
+                          example: 0.99
+                        createdAt:
+                          type: string
+                          format: date-time
+                        completedAt:
+                          type: string
+                          format: date-time
 
-  /api/transactions/credits:
+  /transactions/analytics:
     get:
       tags:
-        - User Transactions
-      summary: Get transactions credits
-      description: Get the credit balance for the authenticated user.
-      operationId: getTransactionsCredits
+        - Transaction History
+      summary: Get transactions analytics
+      description: Get spending analytics and transaction insights for the authenticated user
+      operationId: getTransactionsAnalytics
+      parameters:
+        - name: period
+          in: query
+          description: Time period for analytics
+          required: false
+          schema:
+            type: string
+            enum: ["7d", "30d", "90d", "1y"]
+            default: "30d"
+        - name: cardId
+          in: query
+          description: Filter analytics by specific card
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: Credit balance retrieved successfully
+          description: Transaction analytics retrieved successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  userId:
+                  totalSpent:
                     type: number
-                    example: 123
-                  balance:
+                    format: decimal
+                    example: 2847.63
+                  totalTransactions:
                     type: number
-                    example: 123
+                    example: 47
+                  averageTransaction:
+                    type: number
+                    format: decimal
+                    example: 60.59
+                  topCategories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category:
+                          type: string
+                          example: "Online Shopping"
+                        amount:
+                          type: number
+                          format: decimal
+                          example: 892.34
+                        percentage:
+                          type: number
+                          format: decimal
+                          example: 31.3
+                  entroEarned:
+                    type: number
+                    format: decimal
+                    example: 28.48
 
-  # ENTRO Token
-  /api/entro/balance:
+  # Crypto Funding
+  /funding/deposit:
+    post:
+      tags:
+        - Crypto Funding
+      summary: Post funding deposit
+      description: Initiate cryptocurrency deposit to fund card balance
+      operationId: postFundingDeposit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardId:
+                  type: string
+                  example: "card_abc123def456"
+                cryptocurrency:
+                  type: string
+                  enum: [SOL, USDC, USDT, BTC, ETH, MATIC]
+                  example: "USDC"
+                amount:
+                  type: number
+                  format: decimal
+                  example: 1000.00
+                network:
+                  type: string
+                  enum: [solana, ethereum, polygon]
+                  example: "solana"
+      responses:
+        "201":
+          description: Deposit initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  depositId:
+                    type: string
+                    example: "dep_abc123def456"
+                  walletAddress:
+                    type: string
+                    example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
+                  amount:
+                    type: number
+                    format: decimal
+                    example: 1000.00
+                  cryptocurrency:
+                    type: string
+                    example: "USDC"
+                  network:
+                    type: string
+                    example: "solana"
+                  exchangeRate:
+                    type: number
+                    format: decimal
+                    example: 0.9998
+                  estimatedFiat:
+                    type: number
+                    format: decimal
+                    example: 999.80
+                  status:
+                    type: string
+                    example: "pending"
+                  expiresAt:
+                    type: string
+                    format: date-time
+
+  /funding/withdraw:
+    post:
+      tags:
+        - Crypto Funding
+      summary: Post funding withdraw
+      description: Withdraw card balance to cryptocurrency wallet
+      operationId: postFundingWithdraw
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardId:
+                  type: string
+                  example: "card_abc123def456"
+                amount:
+                  type: number
+                  format: decimal
+                  example: 500.00
+                cryptocurrency:
+                  type: string
+                  enum: [SOL, USDC, USDT]
+                  example: "USDC"
+                walletAddress:
+                  type: string
+                  example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
+                network:
+                  type: string
+                  enum: [solana, ethereum, polygon]
+                  example: "solana"
+      responses:
+        "201":
+          description: Withdrawal initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  withdrawalId:
+                    type: string
+                    example: "wth_abc123def456"
+                  amount:
+                    type: number
+                    format: decimal
+                    example: 500.00
+                  cryptocurrency:
+                    type: string
+                    example: "USDC"
+                  networkFee:
+                    type: number
+                    format: decimal
+                    example: 2.50
+                  processingFee:
+                    type: number
+                    format: decimal
+                    example: 5.00
+                  netAmount:
+                    type: number
+                    format: decimal
+                    example: 492.50
+                  status:
+                    type: string
+                    example: "pending"
+
+  /funding/status:
     get:
       tags:
-        - ENTRO Token
+        - Crypto Funding
+      summary: Get funding status
+      description: Check status of deposit or withdrawal operations
+      operationId: getFundingStatus
+      parameters:
+        - name: operationId
+          in: query
+          required: true
+          description: Deposit or withdrawal operation ID
+          schema:
+            type: string
+            example: "dep_abc123def456"
+      responses:
+        "200":
+          description: Funding operation status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                    example: "dep_abc123def456"
+                  type:
+                    type: string
+                    enum: [deposit, withdrawal]
+                    example: "deposit"
+                  status:
+                    type: string
+                    enum: [pending, processing, completed, failed, cancelled]
+                    example: "completed"
+                  amount:
+                    type: number
+                    format: decimal
+                    example: 1000.00
+                  cryptocurrency:
+                    type: string
+                    example: "USDC"
+                  transactionHash:
+                    type: string
+                    example: "5xK2Tg9CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
+                  completedAt:
+                    type: string
+                    format: date-time
+
+  # ENTRO Rewards
+  /entro/balance:
+    get:
+      tags:
+        - ENTRO Rewards
       summary: Get ENTRO balance
-      description: Retrieve the current ENTRO token balance for the authenticated user.
+      description: Retrieve current ENTRO token balance and staking information
       operationId: getEntroBalance
       responses:
         "200":
@@ -390,60 +836,111 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EntroBalance'
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    example: "usr_abc123def456"
+                  totalBalance:
+                    type: number
+                    format: decimal
+                    example: 1250.75
+                  availableBalance:
+                    type: number
+                    format: decimal
+                    example: 850.25
+                  stakedBalance:
+                    type: number
+                    format: decimal
+                    example: 400.50
+                  pendingRewards:
+                    type: number
+                    format: decimal
+                    example: 12.34
+                  totalEarned:
+                    type: number
+                    format: decimal
+                    example: 186.92
+                  lastUpdated:
+                    type: string
+                    format: date-time
 
-  /api/entro/rewards:
+  /entro/rewards/history:
     get:
       tags:
-        - ENTRO Token
-      summary: Get ENTRO rewards
-      description: Retrieve ENTRO token rewards earned through transactions.
-      operationId: getEntroRewards
+        - ENTRO Rewards
+      summary: Get ENTRO rewards history
+      description: Retrieve detailed ENTRO token rewards history
+      operationId: getEntroRewardsHistory
       parameters:
         - name: startDate
           in: query
+          description: Start date for rewards search
+          required: false
           schema:
             type: string
             format: date
         - name: endDate
           in: query
+          description: End date for rewards search
+          required: false
           schema:
             type: string
             format: date
+        - name: limit
+          in: query
+          description: Number of reward entries to return
+          required: false
+          schema:
+            type: string
+            default: "50"
       responses:
         "200":
-          description: ENTRO rewards retrieved successfully
+          description: ENTRO rewards history retrieved successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  totalEarned:
-                    type: number
-                    format: decimal
-                    example: 25.75
                   rewards:
                     type: array
                     items:
                       type: object
                       properties:
+                        id:
+                          type: string
+                          example: "reward_abc123def456"
                         transactionId:
                           type: string
-                          example: "txn_abc123"
+                          example: "txn_abc123def456"
                         amount:
                           type: number
                           format: decimal
-                          example: 0.25
+                          example: 2.45
+                        rewardRate:
+                          type: number
+                          format: decimal
+                          example: 1.5
+                        merchant:
+                          type: string
+                          example: "Steam Store"
+                        category:
+                          type: string
+                          example: "Gaming"
                         earnedAt:
                           type: string
                           format: date-time
+                  totalEarned:
+                    type: number
+                    format: decimal
+                    example: 186.92
 
-  /api/entro/stake:
+  /entro/stake:
     post:
       tags:
-        - ENTRO Token
+        - ENTRO Rewards
       summary: Post ENTRO stake
-      description: Stake ENTRO tokens to earn rewards.
+      description: Stake ENTRO tokens to earn additional rewards
       operationId: postEntroStake
       requestBody:
         required: true
@@ -455,10 +952,10 @@ paths:
                 amount:
                   type: number
                   format: decimal
-                  example: 100.0
+                  example: 500.00
                 duration:
                   type: string
-                  enum: ["30d", "90d", "180d", "1y"]
+                  enum: ["30d", "90d", "180d", "365d"]
                   example: "90d"
       responses:
         "201":
@@ -470,25 +967,35 @@ paths:
                 properties:
                   stakeId:
                     type: string
-                    example: "stake_abc123"
+                    example: "stake_abc123def456"
                   amount:
                     type: number
                     format: decimal
-                    example: 100.0
+                    example: 500.00
+                  duration:
+                    type: string
+                    example: "90d"
                   apy:
                     type: number
                     format: decimal
-                    example: 8.5
+                    example: 12.5
+                  estimatedReward:
+                    type: number
+                    format: decimal
+                    example: 15.62
                   maturityDate:
                     type: string
                     format: date-time
+                  status:
+                    type: string
+                    example: "active"
 
-  /api/entro/unstake:
+  /entro/unstake:
     post:
       tags:
-        - ENTRO Token
+        - ENTRO Rewards
       summary: Post ENTRO unstake
-      description: Unstake ENTRO tokens and claim rewards.
+      description: Unstake ENTRO tokens and claim accumulated rewards
       operationId: postEntroUnstake
       requestBody:
         required: true
@@ -499,7 +1006,7 @@ paths:
               properties:
                 stakeId:
                   type: string
-                  example: "stake_abc123"
+                  example: "stake_abc123def456"
       responses:
         "200":
           description: ENTRO tokens unstaked successfully
@@ -508,126 +1015,164 @@ paths:
               schema:
                 type: object
                 properties:
-                  amount:
+                  stakeId:
+                    type: string
+                    example: "stake_abc123def456"
+                  stakedAmount:
                     type: number
                     format: decimal
-                    example: 100.0
-                  rewards:
+                    example: 500.00
+                  rewardAmount:
                     type: number
                     format: decimal
-                    example: 7.5
-                  total:
+                    example: 15.62
+                  totalAmount:
                     type: number
                     format: decimal
-                    example: 107.5
+                    example: 515.62
+                  penalty:
+                    type: number
+                    format: decimal
+                    example: 0.00
+                  unstakedAt:
+                    type: string
+                    format: date-time
 
-  # Funding
-  /api/funding/deposit:
-    post:
+  # Compliance Reporting
+  /compliance/tax-report:
+    get:
       tags:
-        - Funding
-      summary: Post funding deposit
-      description: Deposit cryptocurrency to fund your Entro Finance account.
-      operationId: postFundingDeposit
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                cryptocurrency:
-                  type: string
-                  enum: [SOL, USDC, USDT, BTC, ETH]
-                  example: "USDC"
-                amount:
-                  type: number
-                  format: decimal
-                  example: 500.0
-                targetCardId:
-                  type: string
-                  example: "card_9d1e2f3a4b5c6789"
+        - Compliance Reporting
+      summary: Get compliance tax report
+      description: Generate comprehensive tax reporting data for the specified period
+      operationId: getComplianceTaxReport
+      parameters:
+        - name: year
+          in: query
+          required: true
+          description: Tax year for report generation
+          schema:
+            type: string
+            example: "2024"
+        - name: format
+          in: query
+          description: Report format
+          required: false
+          schema:
+            type: string
+            enum: [json, csv, pdf]
+            default: "json"
       responses:
-        "201":
-          description: Deposit initiated successfully
+        "200":
+          description: Tax report generated successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  depositId:
+                  reportId:
                     type: string
-                    example: "dep_abc123"
-                  walletAddress:
+                    example: "report_abc123def456"
+                  year:
                     type: string
-                    example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
-                  amount:
+                    example: "2024"
+                  totalTransactions:
+                    type: number
+                    example: 156
+                  totalSpent:
                     type: number
                     format: decimal
-                    example: 500.0
-                  exchangeRate:
+                    example: 12847.92
+                  totalRewards:
                     type: number
                     format: decimal
-                    example: 1.0
-                  estimatedUsd:
-                    type: number
-                    format: decimal
-                    example: 500.0
-                  status:
+                    example: 128.48
+                  taxableEvents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        eventType:
+                          type: string
+                          example: "crypto_conversion"
+                        date:
+                          type: string
+                          format: date
+                        amount:
+                          type: number
+                          format: decimal
+                          example: 500.00
+                        taxImplication:
+                          type: string
+                          example: "capital_gain"
+                  generatedAt:
                     type: string
-                    example: "pending"
+                    format: date-time
 
-  /api/funding/withdraw:
-    post:
+  /compliance/transaction-report:
+    get:
       tags:
-        - Funding
-      summary: Post funding withdraw
-      description: Withdraw funds from your card balance to cryptocurrency.
-      operationId: postFundingWithdraw
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                cardId:
-                  type: string
-                  example: "card_9d1e2f3a4b5c6789"
-                amount:
-                  type: number
-                  format: decimal
-                  example: 250.0
-                cryptocurrency:
-                  type: string
-                  enum: [SOL, USDC, USDT]
-                  example: "USDC"
-                walletAddress:
-                  type: string
-                  example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
+        - Compliance Reporting
+      summary: Get compliance transaction report
+      description: Export detailed transaction data for compliance and auditing purposes
+      operationId: getComplianceTransactionReport
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          description: Start date for transaction export
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: true
+          description: End date for transaction export
+          schema:
+            type: string
+            format: date
+        - name: format
+          in: query
+          description: Export format
+          required: false
+          schema:
+            type: string
+            enum: [json, csv]
+            default: "csv"
       responses:
-        "201":
-          description: Withdrawal initiated successfully
+        "200":
+          description: Transaction report exported successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  withdrawalId:
+                  reportId:
                     type: string
-                    example: "wth_abc123"
-                  amount:
+                    example: "txn_report_abc123def456"
+                  period:
+                    type: object
+                    properties:
+                      startDate:
+                        type: string
+                        format: date
+                      endDate:
+                        type: string
+                        format: date
+                  totalTransactions:
                     type: number
-                    format: decimal
-                    example: 250.0
-                  fee:
-                    type: number
-                    format: decimal
-                    example: 2.5
-                  netAmount:
-                    type: number
-                    format: decimal
-                    example: 247.5
-                  status:
+                    example: 89
+                  downloadUrl:
                     type: string
-                    example: "pending"
+                    example: "https://api.entro.finance/downloads/txn_report_abc123def456.csv"
+                  expiresAt:
+                    type: string
+                    format: date-time
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer token authentication. Include the token in the Authorization header
