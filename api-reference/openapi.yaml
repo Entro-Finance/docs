@@ -1,132 +1,30 @@
 openapi: 3.0.0
 info:
   title: Entro Finance API
-  description: API REST de Entro Finance para gestión de tarjetas, transacciones y tokens ENTRO
+  description: API simple de prueba para Mintlify
   version: 1.0.0
 servers:
-  - url: https://api.entro.finance/v1
-    description: Servidor de producción
+  - url: https://api.entro.finance
+
 paths:
-  /users:
+  /hello:
     get:
-      summary: Listar usuarios
-      description: Devuelve una lista de usuarios registrados en Entro Finance.
+      tags:
+        - Test
+      summary: Saludo simple
+      description: Endpoint de prueba que devuelve un saludo
+      operationId: getHello
       responses:
         "200":
-          description: Lista de usuarios
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      example: "user_123"
-                    name:
-                      type: string
-                      example: "Juan Pérez"
-                    email:
-                      type: string
-                      example: "juan@email.com"
-  /cards:
-    get:
-      summary: Listar tarjetas
-      description: Obtiene las tarjetas del usuario autenticado.
-      responses:
-        "200":
-          description: Lista de tarjetas
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      example: "card_456"
-                    type:
-                      type: string
-                      example: "virtual"
-                    balance:
-                      type: number
-                      example: 1250.50
-    post:
-      summary: Crear tarjeta
-      description: Crea una nueva tarjeta Entro Finance.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                type:
-                  type: string
-                  example: "virtual"
-                currency:
-                  type: string
-                  example: "USD"
-      responses:
-        "201":
-          description: Tarjeta creada exitosamente
+          description: Saludo exitoso
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  id:
+                  message:
                     type: string
-                    example: "card_789"
-                  status:
+                    example: "Hola desde Entro Finance API"
+                  timestamp:
                     type: string
-                    example: "active"
-  /transactions:
-    get:
-      summary: Historial de transacciones
-      description: Obtiene el historial de transacciones del usuario.
-      responses:
-        "200":
-          description: Lista de transacciones
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      example: "txn_abc123"
-                    amount:
-                      type: number
-                      example: 25.99
-                    merchant:
-                      type: string
-                      example: "Coffee Shop"
-                    entroReward:
-                      type: number
-                      example: 0.25
-  /entro/balance:
-    get:
-      summary: Balance de tokens ENTRO
-      description: Obtiene el balance actual de tokens ENTRO del usuario.
-      responses:
-        "200":
-          description: Balance de ENTRO
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  balance:
-                    type: number
-                    example: 125.50
-                  lockedBalance:
-                    type: number
-                    example: 50.00
-                  availableBalance:
-                    type: number
-                    example: 75.50
+                    example: "2024-01-15T10:30:00Z"

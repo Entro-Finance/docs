@@ -22,114 +22,91 @@
       "url": "https://entro.finance"
     }
   ],
-  "navigation": {
-    "tabs": [
-      {
-        "tab": "WHITEPAPER",
-        "icon": "document-text",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "index",
-              "getting-started/what-is-entro",
-              "getting-started/quickstart"
-            ]
-          },
-          {
-            "group": "How Entro Works",
-            "pages": [
-              "how-it-works/overview",
-              "how-it-works/card-system",
-              "how-it-works/payment-processing",
-              "how-it-works/security-infrastructure",
-              "how-it-works/global-network"
-            ]
-          },
-          {
-            "group": "ENTRO Tokenomics",
-            "pages": [
-              "tokenomics/entro-token",
-              "tokenomics/utility",
-              "tokenomics/distribution",
-              "tokenomics/buyback-mechanism"
-            ]
-          },
-          {
-            "group": "Use Cases",
-            "pages": [
-              "use-cases/data-transformation",
-              "use-cases/cross-border-payments",
-              "use-cases/merchant-integration",
-              "use-cases/enterprise-solutions"
-            ]
-          },
-          {
-            "group": "Investor",
-            "pages": [
-              "investor/value-proposition",
-              "investor/market-analysis",
-              "investor/financial-model",
-              "investor/roadmap"
-            ]
-          },
-          {
-            "group": "Deep Dive",
-            "pages": [
-              "whitepaper/introduction",
-              "whitepaper/vision",
-              "whitepaper/architecture",
-              "whitepaper/tokenomics",
-              "whitepaper/distribution",
-              "whitepaper/security",
-              "whitepaper/scalability",
-              "whitepaper/governance",
-              "whitepaper/partnerships",
-              "whitepaper/roadmap",
-              "whitepaper/team"
-            ]
-          },
-          {
-            "group": "Other",
-            "pages": [
-              "other/team",
-              "other/official-links",
-              "other/disclaimer",
-              "other/terms-of-service",
-              "other/privacy-policy"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API REST",
-        "icon": "server-stack",
-        "api": {
-          "openapi": "api-reference/openapi.yaml",
-          "directory": "api-reference",
-          "playground": {
-            "display": "interactive",
-            "proxy": true
-          },
-          "params": {
-            "expanded": "closed"
-          },
-          "auth": {
-            "method": "bearer",
-            "name": "Authorization"
-          }
-        },
-        "groups": [
-          {
-            "group": "Introduction",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          }
-        ]
-      }
-    ]
+  "openapi": "api-reference/openapi.yaml",
+  "api": {
+    "playground": {
+      "mode": "show"
+    }
   },
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "index",
+        "getting-started/what-is-entro",
+        "getting-started/quickstart"
+      ]
+    },
+    {
+      "group": "How Entro Works",
+      "pages": [
+        "how-it-works/overview",
+        "how-it-works/card-system",
+        "how-it-works/payment-processing",
+        "how-it-works/security-infrastructure",
+        "how-it-works/global-network"
+      ]
+    },
+    {
+      "group": "ENTRO Tokenomics",
+      "pages": [
+        "tokenomics/entro-token",
+        "tokenomics/utility",
+        "tokenomics/distribution",
+        "tokenomics/buyback-mechanism"
+      ]
+    },
+    {
+      "group": "Use Cases",
+      "pages": [
+        "use-cases/data-transformation",
+        "use-cases/cross-border-payments",
+        "use-cases/merchant-integration",
+        "use-cases/enterprise-solutions"
+      ]
+    },
+    {
+      "group": "Investor",
+      "pages": [
+        "investor/value-proposition",
+        "investor/market-analysis",
+        "investor/financial-model",
+        "investor/roadmap"
+      ]
+    },
+    {
+      "group": "Deep Dive",
+      "pages": [
+        "whitepaper/introduction",
+        "whitepaper/vision",
+        "whitepaper/architecture",
+        "whitepaper/tokenomics",
+        "whitepaper/distribution",
+        "whitepaper/security",
+        "whitepaper/scalability",
+        "whitepaper/governance",
+        "whitepaper/partnerships",
+        "whitepaper/roadmap",
+        "whitepaper/team"
+      ]
+    },
+    {
+      "group": "Other",
+      "pages": [
+        "other/team",
+        "other/official-links",
+        "other/disclaimer",
+        "other/terms-of-service",
+        "other/privacy-policy"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/introduction"
+      ]
+    }
+  ],
   "styling": {
     "eyebrows": "breadcrumbs"
   },
