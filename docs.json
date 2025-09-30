@@ -1,126 +1,31 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "$schema": "https://mintlify.com/schema.json",
   "name": "Entro Finance",
+  "theme": "maple",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "favicon": "/favicon.svg",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/favicon.svg",
-  "navigation": {
-    "tabs": [
-      {
-        "tab": "Documentation",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "index",
-              "getting-started/what-is-entro",
-              "getting-started/quickstart"
-            ]
-          },
-          {
-            "group": "How Entro Works",
-            "pages": [
-              "how-it-works/overview",
-              "how-it-works/card-system",
-              "how-it-works/payment-processing",
-              "how-it-works/security-infrastructure",
-              "how-it-works/global-network"
-            ]
-          },
-          {
-            "group": "ENTRO Tokenomics",
-            "pages": [
-              "tokenomics/entro-token",
-              "tokenomics/utility",
-              "tokenomics/distribution",
-              "tokenomics/buyback-mechanism"
-            ]
-          },
-          {
-            "group": "Use Cases",
-            "pages": [
-              "use-cases/data-transformation",
-              "use-cases/cross-border-payments",
-              "use-cases/merchant-integration",
-              "use-cases/enterprise-solutions"
-            ]
-          },
-          {
-            "group": "Investor",
-            "pages": [
-              "investor/value-proposition",
-              "investor/market-analysis",
-              "investor/financial-model",
-              "investor/roadmap"
-            ]
-          },
-          {
-            "group": "Other",
-            "pages": [
-              "other/team",
-              "other/official-links",
-              "other/disclaimer",
-              "other/terms-of-service",
-              "other/privacy-policy"
-            ]
-          }
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
+  "openapi": "openapi.yaml",
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "group": "Documentation", 
+      "pages": [
+        "getting-started/what-is-entro",
+        "getting-started/quickstart"
       ]
     }
-  },
-  "openapi": "openapi.yaml",
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
-  }
+  ]
 }

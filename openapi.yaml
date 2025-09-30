@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Entro Finance API
   description: |
-    Professional crypto card platform built on Solana blockchain infrastructure.
+    Professional crypto card platform built on Solana blockchain infrastructure. Enable seamless conversion from digital assets to traditional payment methods through Visa and Mastercard networks.
     
     ## Authentication
     All API requests require authentication using API keys in the Authorization header:
@@ -11,15 +11,22 @@ info:
     ```
     
     ## Base URL
-    ```
-    https://api.entrofinance.com
-    ```
+    Production: `https://api.entrofinance.com`
+    Sandbox: `https://sandbox-api.entrofinance.com`
     
     ## Rate Limits
     - Basic: 100 requests/minute, 10,000/day
     - Professional: 1,000 requests/minute, 100,000/day  
     - Enterprise: 10,000 requests/minute, 1,000,000/day
-  version: 1.0.0
+    
+    ## Error Codes
+    - 400: Bad Request - Invalid parameters
+    - 401: Unauthorized - Invalid API key
+    - 403: Forbidden - Insufficient permissions
+    - 404: Not Found - Resource not found
+    - 429: Rate Limited - Too many requests
+    - 500: Server Error - Internal server error
+  version: 2.1.0
   contact:
     name: Entro Finance API Support
     url: https://entrofinance.com/support
@@ -170,14 +177,6 @@ components:
           type: string
           format: date-time
           description: Creation timestamp
-        activatedAt:
-          type: string
-          format: date-time
-          description: Activation timestamp
-        lastUsed:
-          type: string
-          format: date-time
-          description: Last usage timestamp
 
     Balance:
       type: object
@@ -284,15 +283,6 @@ components:
           type: string
           format: date-time
           description: Creation timestamp
-        processedAt:
-          type: string
-          format: date-time
-          description: Processing timestamp
-        balanceAfter:
-          type: number
-          format: decimal
-          description: Card balance after transaction
-          example: 1204.76
 
     Merchant:
       type: object
@@ -338,92 +328,221 @@ components:
           description: Number of confirmations
           example: 32
 
-    Wallet:
+    PaymentPlan:
       type: object
       required:
         - id
-        - address
+        - name
+        - type
+        - price
+        - currency
+        - features
         - status
-        - connectedAt
       properties:
         id:
           type: string
-          description: Unique wallet identifier
-          example: "wallet_9d1e2f3a4b5c6789"
-        address:
+          description: Unique plan identifier
+          example: "plan_premium_2024"
+        name:
           type: string
-          description: Solana wallet address
-          example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
-        provider:
+          description: Plan name
+          example: "Premium Card Plan"
+        type:
           type: string
-          enum: [phantom, solflare, backpack, ledger]
-          description: Wallet provider
+          enum: [basic, premium, enterprise]
+          description: Plan tier
+        price:
+          type: number
+          format: decimal
+          description: Monthly price
+          example: 29.99
+        currency:
+          type: string
+          enum: [USD, EUR, GBP]
+          description: Price currency
+        features:
+          type: array
+          items:
+            type: string
+          description: Plan features
+          example: ["Unlimited virtual cards", "Physical card included", "Priority support"]
+        limits:
+          type: object
+          properties:
+            cardsAllowed:
+              type: integer
+              description: Maximum cards allowed
+            monthlyVolume:
+              type: number
+              format: decimal
+              description: Monthly transaction volume limit
+            apiRequests:
+              type: integer
+              description: Monthly API request limit
         status:
           type: string
-          enum: [connected, disconnected]
-          description: Wallet status
-        balances:
-          type: object
-          description: Token balances
-          additionalProperties:
-            type: number
-            format: decimal
-        connectedAt:
-          type: string
-          format: date-time
-          description: Connection timestamp
-        lastSynced:
-          type: string
-          format: date-time
-          description: Last sync timestamp
+          enum: [active, inactive, deprecated]
+          description: Plan availability status
 
-    Webhook:
+    Tool:
       type: object
       required:
         - id
-        - url
-        - events
+        - name
+        - type
         - status
         - createdAt
       properties:
         id:
           type: string
-          description: Unique webhook identifier
-          example: "webhook_7b8a9c0d1e2f3456"
-        url:
+          description: Unique tool identifier
+          example: "tool_7b8a9c0d1e2f3456"
+        name:
           type: string
-          format: uri
-          description: Webhook endpoint URL
-          example: "https://yourapp.com/webhooks/entro"
-        events:
-          type: array
-          items:
-            type: string
-          description: Subscribed events
-          example: ["card.created", "transaction.completed"]
+          description: Tool name
+          example: "Card Balance Checker"
         description:
           type: string
-          description: Webhook description
+          description: Tool description
+        type:
+          type: string
+          enum: [payment, analytics, security, utility]
+          description: Tool category
+        version:
+          type: string
+          description: Tool version
+          example: "1.2.0"
         status:
           type: string
-          enum: [active, inactive]
-          description: Webhook status
-        secret:
-          type: string
-          description: Webhook secret for signature verification
+          enum: [active, inactive, deprecated]
+          description: Tool status
+        isPublic:
+          type: boolean
+          description: Whether tool is publicly available
+        parameters:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+              required:
+                type: boolean
+              description:
+                type: string
         createdAt:
           type: string
           format: date-time
-          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+        lastUsed:
+          type: string
+          format: date-time
+
+    Toolkit:
+      type: object
+      required:
+        - id
+        - name
+        - isPublic
+        - tools
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Unique toolkit identifier
+          example: "toolkit_7b8a9c0d1e2f3456"
+        name:
+          type: string
+          description: Toolkit name
+          example: "Card Management Suite"
+        description:
+          type: string
+          description: Toolkit description
+        isPublic:
+          type: boolean
+          description: Public visibility
+        userId:
+          type: string
+          description: Owner user ID
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tool'
+        inputs:
+          type: array
+          items:
+            type: string
+          description: Required input parameters
+        envVariables:
+          type: object
+          description: Environment variables
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+        lastUsedAt:
+          type: string
+          format: date-time
+
+    TaskRun:
+      type: object
+      required:
+        - id
+        - runId
+        - status
+        - createdAt
+        - type
+      properties:
+        id:
+          type: string
+          description: Unique run identifier
+          example: "run_7b8a9c0d1e2f3456"
+        runId:
+          type: string
+          description: External run identifier
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        type:
+          type: string
+          enum: [sync, async]
+          description: Execution type
+        status:
+          type: string
+          enum: [pending, running, completed, failed, cancelled]
+          description: Run status
+        input:
+          type: object
+          description: Input parameters for the run
+        output:
+          type: object
+          description: Run output data
+        error:
+          type: string
+          description: Error message if failed
+        duration:
+          type: integer
+          description: Execution duration in milliseconds
+        creditsUsed:
+          type: number
+          format: decimal
+          description: Credits consumed by this run
+        createdAt:
+          type: string
+          format: date-time
 
 paths:
-  # Authentication endpoints
-  /api/auth/keys:
+  # API Keys Management
+  /api/keys:
     get:
       tags:
-        - Authentication
-      summary: List API keys
-      description: Retrieve all API keys for the authenticated user
+        - API Keys
+      summary: Get API keys
+      description: Retrieve all API keys for the authenticated user with pagination and filtering options
       parameters:
         - name: page
           in: query
@@ -431,16 +550,24 @@ paths:
           schema:
             type: integer
             default: 1
+            minimum: 1
         - name: limit
           in: query
           description: Number of results per page
           schema:
             type: integer
             default: 25
+            minimum: 1
             maximum: 100
+        - name: status
+          in: query
+          description: Filter keys by status
+          schema:
+            type: string
+            enum: [active, expired, revoked]
       responses:
         '200':
-          description: Successful response
+          description: List of API keys retrieved successfully
           content:
             application/json:
               schema:
@@ -455,24 +582,22 @@ paths:
                     properties:
                       page:
                         type: integer
+                        example: 1
                       limit:
                         type: integer
+                        example: 25
                       total:
                         type: integer
+                        example: 150
                       totalPages:
                         type: integer
-        '401':
-          description: Authentication failed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                        example: 6
 
     post:
       tags:
-        - Authentication
-      summary: Create API key
-      description: Generate a new API key with specified permissions
+        - API Keys
+      summary: Post API keys
+      description: Create a new API key with specified permissions and optional expiration
       requestBody:
         required: true
         content:
@@ -485,19 +610,27 @@ paths:
               properties:
                 name:
                   type: string
-                  description: Name for the API key
-                  example: "Development Key"
+                  description: Descriptive name for the API key
+                  example: "Production Card Management"
+                  minLength: 1
+                  maxLength: 100
                 permissions:
                   type: array
                   items:
                     type: string
-                  description: Array of permission strings
-                  example: ["cards:read", "transactions:read"]
+                  description: Array of permission scopes
+                  example: ["cards:read", "cards:write", "transactions:read", "webhooks:write"]
+                  minItems: 1
                 expiresIn:
                   type: string
-                  description: Expiration time
+                  description: Expiration period
                   example: "1y"
+                  enum: ["30d", "90d", "1y", "never"]
                   default: "1y"
+                description:
+                  type: string
+                  description: Optional description for the API key
+                  maxLength: 500
       responses:
         '201':
           description: API key created successfully
@@ -513,26 +646,68 @@ paths:
                         properties:
                           key:
                             type: string
-                            description: Full API key (only shown once)
-                            example: "sk_test_8c9b0a1d2e3f4567890abcdef1234567"
+                            description: Full API key value (only returned once)
+                            example: "sk_live_1234567890abcdef..."
 
-  /api/auth/keys/{keyId}:
+    put:
+      tags:
+        - API Keys
+      summary: Put API keys
+      description: Update an existing API key's permissions and settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - keyId
+              properties:
+                keyId:
+                  type: string
+                  description: API key identifier to update
+                  example: "key_7b8a9c0d1e2f3456"
+                name:
+                  type: string
+                  description: Updated name for the API key
+                  maxLength: 100
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                  description: Updated permission scopes
+                  example: ["cards:read", "transactions:read"]
+      responses:
+        '200':
+          description: API key updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKey:
+                    $ref: '#/components/schemas/ApiKey'
+                  message:
+                    type: string
+                    example: "API key updated successfully"
+
+  /api/keys/{keyId}:
     delete:
       tags:
-        - Authentication
-      summary: Revoke API key
-      description: Permanently revoke an API key
+        - API Keys
+      summary: Delete API keys
+      description: Permanently revoke and delete an API key
       parameters:
         - name: keyId
           in: path
           required: true
-          description: API key ID to revoke
+          description: Unique identifier of the API key to delete
           schema:
             type: string
             example: "key_7b8a9c0d1e2f3456"
       responses:
         '200':
-          description: API key revoked successfully
+          description: API key deleted successfully
           content:
             application/json:
               schema:
@@ -543,79 +718,18 @@ paths:
                     example: true
                   message:
                     type: string
-                    example: "API key revoked successfully"
-                  revokedAt:
+                    example: "API key deleted successfully"
+                  deletedAt:
                     type: string
                     format: date-time
+                    example: "2024-03-20T10:30:00Z"
 
-  # Cards endpoints
-  /api/cards:
-    get:
-      tags:
-        - Cards
-      summary: List cards
-      description: Retrieve all cards for the authenticated user
-      parameters:
-        - name: page
-          in: query
-          description: Page number for pagination
-          schema:
-            type: integer
-            default: 1
-        - name: limit
-          in: query
-          description: Number of results per page
-          schema:
-            type: integer
-            default: 25
-            maximum: 100
-        - name: status
-          in: query
-          description: Filter by card status
-          schema:
-            type: string
-            enum: [active, frozen, expired, cancelled]
-        - name: type
-          in: query
-          description: Filter by card type
-          schema:
-            type: string
-            enum: [virtual, physical]
-        - name: currency
-          in: query
-          description: Filter by currency
-          schema:
-            type: string
-            enum: [USD, EUR, GBP]
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  cards:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Card'
-                  pagination:
-                    type: object
-                    properties:
-                      page:
-                        type: integer
-                      limit:
-                        type: integer
-                      total:
-                        type: integer
-                      totalPages:
-                        type: integer
-
+  /api/keys/bulk-revoke:
     post:
       tags:
-        - Cards
-      summary: Create card
-      description: Create a new virtual or physical crypto card
+        - API Keys
+      summary: Post API keys bulk revoke
+      description: Revoke multiple API keys simultaneously
       requestBody:
         required: true
         content:
@@ -623,79 +737,70 @@ paths:
             schema:
               type: object
               required:
-                - type
-                - currency
-                - name
-                - walletAddress
-                - limits
+                - keyIds
               properties:
-                type:
-                  type: string
-                  enum: [virtual, physical]
-                  description: Card type
-                currency:
-                  type: string
-                  enum: [USD, EUR, GBP]
-                  description: Card currency
-                name:
-                  type: string
-                  description: Display name for the card
-                  example: "My Crypto Card"
-                walletAddress:
-                  type: string
-                  description: Solana wallet address for funding
-                  example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
-                limits:
-                  type: object
-                  required:
-                    - daily
-                    - monthly
-                    - perTransaction
-                  properties:
-                    daily:
-                      type: number
-                      format: decimal
-                      description: Daily spending limit
-                    monthly:
-                      type: number
-                      format: decimal
-                      description: Monthly spending limit
-                    perTransaction:
-                      type: number
-                      format: decimal
-                      description: Per-transaction limit
-                fundingSource:
-                  type: object
-                  description: Initial funding configuration
-                  properties:
-                    token:
-                      type: string
-                      enum: [SOL, USDC, USDT, BTC, ETH]
-                      description: Token to fund with
-                    amount:
-                      type: number
-                      format: decimal
-                      description: Amount to fund
+                keyIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Array of API key IDs to revoke
+                  example: ["key_7b8a9c0d1e2f3456", "key_8c9d0e1f2a3b4567"]
+                  minItems: 1
+                  maxItems: 50
       responses:
-        '201':
-          description: Card created successfully
+        '200':
+          description: Bulk revocation completed
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  card:
-                    $ref: '#/components/schemas/Card'
-                  transaction:
-                    $ref: '#/components/schemas/Transaction'
+                  success:
+                    type: boolean
+                    example: true
+                  revokedCount:
+                    type: integer
+                    example: 5
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        keyId:
+                          type: string
+                        status:
+                          type: string
+                          enum: [revoked, failed, not_found]
 
-  # Transactions endpoints
+  # User Transactions
+  /api/transactions/credits:
+    get:
+      tags:
+        - User Transactions
+      summary: Get API transactions credits
+      description: Retrieve current user credit balance and transaction history
+      responses:
+        '200':
+          description: Credit information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    type: number
+                    format: decimal
+                    example: 2500.75
+                  currency:
+                    type: string
+                    example: "USD"
+
   /api/transactions:
     get:
       tags:
-        - Transactions
-      summary: List transactions
-      description: Retrieve transaction history for cards and wallets
+        - User Transactions
+      summary: Get API transactions
+      description: Retrieve comprehensive transaction history with advanced filtering
       parameters:
         - name: page
           in: query
@@ -706,40 +811,16 @@ paths:
           in: query
           schema:
             type: integer
-            default: 25
-            maximum: 100
+            default: 50
+            maximum: 200
         - name: cardId
           in: query
           description: Filter by specific card ID
           schema:
             type: string
-        - name: type
-          in: query
-          description: Filter by transaction type
-          schema:
-            type: string
-            enum: [payment, funding, withdrawal, refund]
-        - name: status
-          in: query
-          description: Filter by status
-          schema:
-            type: string
-            enum: [pending, completed, failed, cancelled]
-        - name: dateFrom
-          in: query
-          description: Start date filter
-          schema:
-            type: string
-            format: date-time
-        - name: dateTo
-          in: query
-          description: End date filter
-          schema:
-            type: string
-            format: date-time
       responses:
         '200':
-          description: Successful response
+          description: Transaction list retrieved successfully
           content:
             application/json:
               schema:
@@ -749,131 +830,175 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Transaction'
-                  pagination:
-                    type: object
-                    properties:
-                      page:
-                        type: integer
-                      limit:
-                        type: integer
-                      total:
-                        type: integer
-                      totalPages:
-                        type: integer
 
-  /api/balance:
+  # External Payment Integrations - Coinbase
+  /api/transactions/coinbase/charge:
+    post:
+      tags:
+        - Coinbase
+      summary: Post API transactions Coinbase charge
+      description: Create a Coinbase Commerce charge for card funding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+                - currency
+                - cardId
+              properties:
+                amount:
+                  type: number
+                  format: decimal
+                  description: Amount to charge
+                  example: 100.00
+                currency:
+                  type: string
+                  enum: [USD, EUR, GBP]
+                cardId:
+                  type: string
+                  example: "card_9d1e2f3a4b5c6789"
+      responses:
+        '201':
+          description: Coinbase charge created successfully
+
+  /api/transactions/coinbase/poll:
+    post:
+      tags:
+        - Coinbase
+      summary: Post API transactions Coinbase poll
+      description: Poll Coinbase charge status and update transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - chargeId
+              properties:
+                chargeId:
+                  type: string
+                  example: "pay_7b8a9c0d1e2f3456"
+      responses:
+        '200':
+          description: Charge status retrieved successfully
+
+  /api/transactions/coinbase/pending:
     get:
       tags:
-        - Transactions
-      summary: Get balance
-      description: Retrieve current account and card balances
-      parameters:
-        - name: cardId
-          in: query
-          description: Get balance for specific card only
-          schema:
-            type: string
-        - name: currency
-          in: query
-          description: Filter by currency
-          schema:
-            type: string
-            enum: [USD, EUR, GBP]
+        - Coinbase
+      summary: Get API transactions Coinbase pending
+      description: Retrieve all pending Coinbase transactions
       responses:
         '200':
-          description: Successful response
+          description: Pending transactions retrieved successfully
+
+  # Payment Plans
+  /api/transactions/plans:
+    get:
+      tags:
+        - Payment Plans
+      summary: Get API transactions plans
+      description: List all available payment plans
+      responses:
+        '200':
+          description: Payment plans retrieved successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  totalBalance:
-                    type: object
-                    additionalProperties:
-                      type: number
-                      format: decimal
-                  cards:
+                  plans:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Card'
-                  metadata:
+                      $ref: '#/components/schemas/PaymentPlan'
+
+  /api/transactions/active-plan:
+    get:
+      tags:
+        - Payment Plans
+      summary: Get API transactions active plan
+      description: Get current user's active payment plan
+      responses:
+        '200':
+          description: Active plan retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plan:
+                    $ref: '#/components/schemas/PaymentPlan'
+                  subscription:
                     type: object
                     properties:
-                      lastSyncedAt:
+                      status:
+                        type: string
+                        enum: [active, cancelled, expired]
+                      renewsAt:
                         type: string
                         format: date-time
-                      exchangeRates:
-                        type: object
-                        additionalProperties:
-                          type: number
-                          format: decimal
 
-  # Wallets endpoints
-  /api/wallets/connect:
-    post:
+  # Runs
+  /api/run:
+    get:
       tags:
-        - Wallets
-      summary: Connect wallet
-      description: Connect a Solana wallet to the platform
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - walletAddress
-                - signature
-                - message
-              properties:
-                walletAddress:
-                  type: string
-                  description: Base58 Solana wallet address
-                  example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
-                signature:
-                  type: string
-                  description: Signed message proving wallet ownership
-                message:
-                  type: string
-                  description: Original message that was signed
-                provider:
-                  type: string
-                  enum: [phantom, solflare, backpack, ledger]
-                  description: Wallet provider
+        - Runs
+      summary: Get API run
+      description: List all task runs with filtering options
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, running, completed, failed]
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [sync, async]
       responses:
         '200':
-          description: Wallet connected successfully
+          description: Runs retrieved successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  wallet:
-                    $ref: '#/components/schemas/Wallet'
-                  supportedTokens:
+                  runs:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        symbol:
-                          type: string
-                        name:
-                          type: string
-                        decimals:
-                          type: integer
-                        mintAddress:
-                          type: string
-                        balance:
-                          type: number
-                          format: decimal
+                      $ref: '#/components/schemas/TaskRun'
 
-  # Webhooks endpoints
-  /api/webhooks:
+  /api/run/{runId}:
+    get:
+      tags:
+        - Runs
+      summary: Get API run by ID
+      description: Get detailed information about a specific run
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Run details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskRun'
+
+  /api/run/sync:
     post:
       tags:
-        - Webhooks
-      summary: Create webhook
-      description: Create a webhook endpoint for real-time notifications
+        - Runs
+      summary: Post API run sync
+      description: Execute a synchronous task run
       requestBody:
         required: true
         content:
@@ -881,137 +1006,731 @@ paths:
             schema:
               type: object
               required:
-                - url
-                - events
+                - toolId
               properties:
-                url:
+                toolId:
                   type: string
-                  format: uri
-                  description: HTTPS endpoint URL
-                events:
+                  example: "tool_7b8a9c0d1e2f3456"
+                input:
+                  type: object
+                  description: Input parameters for the tool
+      responses:
+        '200':
+          description: Synchronous run completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskRun'
+
+  /api/run/async:
+    post:
+      tags:
+        - Runs
+      summary: Post API run async
+      description: Execute an asynchronous task run
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - toolId
+              properties:
+                toolId:
+                  type: string
+                  example: "tool_7b8a9c0d1e2f3456"
+                input:
+                  type: object
+      responses:
+        '202':
+          description: Asynchronous run started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskRun'
+
+  # Tools
+  /api/tools:
+    get:
+      tags:
+        - Tools
+      summary: Get API tools
+      description: List all available tools
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [payment, analytics, security, utility]
+        - name: isPublic
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Tools retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tools:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tool'
+
+    post:
+      tags:
+        - Tools
+      summary: Post API tools
+      description: Create a new tool
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - type
+              properties:
+                name:
+                  type: string
+                  example: "Card Balance Checker"
+                description:
+                  type: string
+                type:
+                  type: string
+                  enum: [payment, analytics, security, utility]
+                parameters:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '201':
+          description: Tool created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tool'
+
+  /api/tools/{toolId}:
+    get:
+      tags:
+        - Tools
+      summary: Get API tools by ID
+      description: Get detailed information about a specific tool
+      parameters:
+        - name: toolId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tool details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tool'
+
+    delete:
+      tags:
+        - Tools
+      summary: Delete API tools
+      description: Delete a specific tool
+      parameters:
+        - name: toolId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tool deleted successfully
+
+    patch:
+      tags:
+        - Tools
+      summary: Patch API tools
+      description: Update a specific tool
+      parameters:
+        - name: toolId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [active, inactive, deprecated]
+      responses:
+        '200':
+          description: Tool updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tool'
+
+  /api/tools/{toolId}/public:
+    patch:
+      tags:
+        - Tools
+      summary: Patch API tools public
+      description: Toggle tool public visibility
+      parameters:
+        - name: toolId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - isPublic
+              properties:
+                isPublic:
+                  type: boolean
+      responses:
+        '200':
+          description: Tool visibility updated successfully
+
+  /api/tools/{toolId}/execute/sync:
+    post:
+      tags:
+        - Tools
+      summary: Post API tools execute sync
+      description: Execute tool synchronously
+      parameters:
+        - name: toolId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input:
+                  type: object
+      responses:
+        '200':
+          description: Tool executed successfully
+
+  /api/tools/{toolId}/execute/async:
+    post:
+      tags:
+        - Tools
+      summary: Post API tools execute async
+      description: Execute tool asynchronously
+      parameters:
+        - name: toolId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input:
+                  type: object
+      responses:
+        '202':
+          description: Tool execution started
+
+  # Toolkits
+  /api/toolkit:
+    get:
+      tags:
+        - Toolkits
+      summary: Get API toolkit
+      description: List all toolkits
+      parameters:
+        - name: private
+          in: query
+          description: Filter toolkits by visibility
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Toolkits retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  toolkits:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Toolkit'
+
+    post:
+      tags:
+        - Toolkits
+      summary: Post API toolkit
+      description: Create a new toolkit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: "Card Management Suite"
+                description:
+                  type: string
+                isPublic:
+                  type: boolean
+                  default: false
+      responses:
+        '201':
+          description: Toolkit created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Toolkit'
+
+  /api/toolkit/{toolkitId}:
+    get:
+      tags:
+        - Toolkits
+      summary: Get API toolkit by ID
+      description: Get detailed information about a specific toolkit
+      parameters:
+        - name: toolkitId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Toolkit details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Toolkit'
+
+    delete:
+      tags:
+        - Toolkits
+      summary: Delete API toolkit
+      description: Delete a specific toolkit
+      parameters:
+        - name: toolkitId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Toolkit deleted successfully
+
+    patch:
+      tags:
+        - Toolkits
+      summary: Patch API toolkit
+      description: Update a specific toolkit
+      parameters:
+        - name: toolkitId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Toolkit updated successfully
+
+  /api/toolkit/{toolkitId}/tools:
+    post:
+      tags:
+        - Toolkits
+      summary: Post API toolkit tools
+      description: Add tools to a toolkit
+      parameters:
+        - name: toolkitId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - toolIds
+              properties:
+                toolIds:
                   type: array
                   items:
                     type: string
-                  description: Array of event types to subscribe to
-                description:
+      responses:
+        '200':
+          description: Tools added to toolkit successfully
+
+    delete:
+      tags:
+        - Toolkits
+      summary: Delete API toolkit tools
+      description: Remove tools from a toolkit
+      parameters:
+        - name: toolkitId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - toolIds
+              properties:
+                toolIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Tools removed from toolkit successfully
+
+  /api/toolkit/{toolkitId}/clone:
+    post:
+      tags:
+        - Toolkits
+      summary: Post API toolkit clone
+      description: Clone an existing toolkit
+      parameters:
+        - name: toolkitId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
                   type: string
-                  description: Webhook description
-                secret:
-                  type: string
-                  description: Secret for signature verification
+                  description: Name for the cloned toolkit
       responses:
         '201':
-          description: Webhook created successfully
+          description: Toolkit cloned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Toolkit'
+
+  /api/toolkit/{toolkitId}/public:
+    patch:
+      tags:
+        - Toolkits
+      summary: Patch API toolkit public
+      description: Toggle toolkit public visibility
+      parameters:
+        - name: toolkitId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - isPublic
+              properties:
+                isPublic:
+                  type: boolean
+      responses:
+        '200':
+          description: Toolkit visibility updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Toolkit'
+
+  /api/toolkit/{toolkitId}/execute/sync:
+    post:
+      tags:
+        - Toolkits
+      summary: Post API toolkit execute sync
+      description: Execute toolkit synchronously
+      parameters:
+        - name: toolkitId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input:
+                  type: object
+      responses:
+        '200':
+          description: Toolkit executed successfully
+
+  /api/toolkit/{toolkitId}/execute/async:
+    post:
+      tags:
+        - Toolkits
+      summary: Post API toolkit execute async
+      description: Execute toolkit asynchronously
+      parameters:
+        - name: toolkitId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input:
+                  type: object
+      responses:
+        '202':
+          description: Toolkit execution started
+
+  # Referrals
+  /api/referrals/track-visit:
+    post:
+      tags:
+        - Referrals
+      summary: Post API referrals track visit
+      description: Track a referral visit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - referralCode
+              properties:
+                referralCode:
+                  type: string
+                  example: "ENTRO2024"
+                metadata:
+                  type: object
+                  properties:
+                    userAgent:
+                      type: string
+                    ipAddress:
+                      type: string
+                    source:
+                      type: string
+      responses:
+        '200':
+          description: Visit tracked successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  webhook:
-                    $ref: '#/components/schemas/Webhook'
+                  success:
+                    type: boolean
+                    example: true
+                  visitId:
+                    type: string
+                  referral:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                      reward:
+                        type: object
 
-  # Analytics endpoints
-  /api/analytics/spending:
+  /api/referrals/stats:
     get:
       tags:
-        - Analytics
-      summary: Get spending insights
-      description: Retrieve detailed spending analytics and insights
+        - Referrals
+      summary: Get API referrals stats
+      description: Get referral statistics for the authenticated user
       parameters:
         - name: period
           in: query
-          description: Time period
           schema:
             type: string
-            enum: [7d, 30d, 90d, 1y, custom]
-            default: "30d"
-        - name: dateFrom
-          in: query
-          description: Start date for custom period
-          schema:
-            type: string
-            format: date-time
-        - name: dateTo
-          in: query
-          description: End date for custom period
-          schema:
-            type: string
-            format: date-time
-        - name: cardId
-          in: query
-          description: Filter by specific card ID
-          schema:
-            type: string
-        - name: currency
-          in: query
-          description: Currency for analytics
-          schema:
-            type: string
-            enum: [USD, EUR, GBP]
-            default: "USD"
+            enum: [7d, 30d, 90d, 1y]
+            default: 30d
       responses:
         '200':
-          description: Successful response
+          description: Referral statistics retrieved successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  summary:
+                  totalVisits:
+                    type: integer
+                    example: 150
+                  totalConversions:
+                    type: integer
+                    example: 25
+                  conversionRate:
+                    type: number
+                    format: decimal
+                    example: 16.67
+                  totalEarnings:
+                    type: number
+                    format: decimal
+                    example: 250.00
+                  currency:
+                    type: string
+                    example: "USD"
+
+  /api/referrals/code:
+    get:
+      tags:
+        - Referrals
+      summary: Get API referrals code
+      description: Get user's referral code information
+      responses:
+        '200':
+          description: Referral code information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "ENTRO2024"
+                  url:
+                    type: string
+                    format: uri
+                    example: "https://entrofinance.com/signup?ref=ENTRO2024"
+                  status:
+                    type: string
+                    enum: [active, inactive, expired]
+                  reward:
                     type: object
                     properties:
-                      totalSpent:
+                      amount:
                         type: number
                         format: decimal
-                      transactionCount:
-                        type: integer
-                      averageTransaction:
+                        example: 10.00
+                      currency:
+                        type: string
+                        example: "USD"
+                      type:
+                        type: string
+                        enum: [credit, cash, percentage]
+
+  /api/referrals/associate-user:
+    post:
+      tags:
+        - Referrals
+      summary: Post API referrals associate user
+      description: Associate a new user with a referral code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - referralCode
+                - userId
+              properties:
+                referralCode:
+                  type: string
+                  example: "ENTRO2024"
+                userId:
+                  type: string
+                  example: "user_7b8a9c0d1e2f3456"
+                conversionType:
+                  type: string
+                  enum: [signup, first_card, first_transaction]
+                  example: "signup"
+      responses:
+        '200':
+          description: User associated with referral successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  referralId:
+                    type: string
+                  rewardEarned:
+                    type: object
+                    properties:
+                      amount:
                         type: number
                         format: decimal
                       currency:
                         type: string
-                      period:
-                        type: string
-                  categoryBreakdown:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        category:
-                          type: string
-                        name:
-                          type: string
-                        amount:
-                          type: number
-                          format: decimal
-                        percentage:
-                          type: number
-                          format: decimal
-                        transactionCount:
-                          type: integer
-                  trends:
-                    type: object
-                    properties:
-                      weekOverWeek:
-                        type: object
-                        properties:
-                          percentageChange:
-                            type: number
-                            format: decimal
-                          direction:
-                            type: string
-                            enum: [increase, decrease]
 
 tags:
-  - name: Authentication
-    description: API key and OAuth authentication management
-  - name: Cards
-    description: Virtual and physical crypto card management
-  - name: Transactions
-    description: Transaction history and balance management
-  - name: Wallets
-    description: Solana wallet connectivity and management
-  - name: Webhooks
-    description: Real-time event notifications
-  - name: Analytics
-    description: Spending insights and analytics
+  - name: API Keys
+    description: API key and authentication management
+  - name: User Transactions
+    description: Transaction history and credit management
+  - name: Coinbase
+    description: Coinbase Commerce payment integration
+  - name: Payment Plans
+    description: Subscription plan management
+  - name: Runs
+    description: Task execution and monitoring
+  - name: Tools
+    description: Individual tool management and execution
+  - name: Toolkits
+    description: Tool collection management and execution
+  - name: Referrals
+    description: Referral program management and tracking
