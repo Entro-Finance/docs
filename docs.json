@@ -105,14 +105,7 @@
         "tab": "API REFERENCE",
         "icon": "server-stack",
         "openapi": "api-reference/openapi.yaml",
-        "groups": [
-          {
-            "group": "Introduction",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          }
-        ]
+        "groups": []
       }
     ]
   },
