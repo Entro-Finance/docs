@@ -1,30 +1,633 @@
 openapi: 3.0.0
 info:
   title: Entro Finance API
-  description: API simple de prueba para Mintlify
-  version: 1.0.0
+  description: Professional cryptocurrency card platform API
+  version: 2.1.0
 servers:
-  - url: https://api.entro.finance
+  - url: https://api.entro.finance/v2
 
 paths:
-  /hello:
+  /api/keys:
     get:
       tags:
-        - Test
-      summary: Saludo simple
-      description: Endpoint de prueba que devuelve un saludo
-      operationId: getHello
+        - API Keys
+      summary: Get API keys
+      description: List all API keys for the authenticated user
+      operationId: getApiKeys
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: string
+            default: "1"
+        - name: limit
+          in: query
+          description: Number of results per page
+          required: false
+          schema:
+            type: string
+            default: "25"
       responses:
         "200":
-          description: Saludo exitoso
+          description: List of API keys retrieved successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  message:
+                  apiKeys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "key_7b8a9c0d1e2f3456"
+                        name:
+                          type: string
+                          example: "Production API Key"
+                        key:
+                          type: string
+                          example: "sk_live_...f3456"
+                        permissions:
+                          type: array
+                          items:
+                            type: string
+                          example: ["cards:read", "cards:write"]
+                        createdAt:
+                          type: string
+                          format: date-time
+                        status:
+                          type: string
+                          enum: [active, expired, revoked]
+                  elements:
+                    type: number
+                    example: 5
+                  total:
+                    type: number
+                    example: 42
+                  page:
+                    type: number
+                    example: 1
+                  limit:
+                    type: number
+                    example: 25
+
+    post:
+      tags:
+        - API Keys
+      summary: Post API keys
+      description: Create a new API key with specified permissions.
+      operationId: postApiKeys
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Production Card Management"
+                permissions:
+                  type: array
+                  items:
                     type: string
-                    example: "Hola desde Entro Finance API"
-                  timestamp:
+                  example: ["cards:read", "cards:write"]
+      responses:
+        "201":
+          description: API key created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+
+    put:
+      tags:
+        - API Keys
+      summary: Put API keys
+      description: Update an existing API key's permissions and settings.
+      operationId: putApiKeys
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keyId:
+                  type: string
+                  example: "key_7b8a9c0d1e2f3456"
+                permissions:
+                  type: array
+                  items:
                     type: string
-                    example: "2024-01-15T10:30:00Z"
+                  example: ["cards:read", "transactions:read"]
+      responses:
+        "200":
+          description: API key updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+
+    delete:
+      tags:
+        - API Keys
+      summary: Delete API keys
+      description: Revoke an API key permanently.
+      operationId: deleteApiKeys
+      parameters:
+        - name: keyId
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "key_7b8a9c0d1e2f3456"
+      responses:
+        "204":
+          description: API key deleted successfully
+
+  /api/keys/bulk/revoke:
+    post:
+      tags:
+        - API Keys
+      summary: Post API keys bulk revoke
+      description: Revoke multiple API keys in a single request.
+      operationId: postApiKeysBulkRevoke
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keyIds:
+                  type: array
+                  items:
+                    type: string
+                  example: ["key_123", "key_456"]
+      responses:
+        "200":
+          description: Bulk revocation completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  revoked:
+                    type: number
+                    example: 2
+                  failed:
+                    type: number
+                    example: 0
+
+  # Card Management
+  /api/cards:
+    get:
+      tags:
+        - Card Management
+      summary: Get cards
+      description: List all cards for the authenticated user.
+      operationId: getCards
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, frozen, expired, cancelled]
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [virtual, physical]
+      responses:
+        "200":
+          description: List of cards retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cards:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Card'
+
+    post:
+      tags:
+        - Card Management
+      summary: Post cards
+      description: Create a new virtual or physical card.
+      operationId: postCards
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [virtual, physical]
+                currency:
+                  type: string
+                  enum: [USD, EUR, GBP]
+                name:
+                  type: string
+                  example: "My Shopping Card"
+      responses:
+        "201":
+          description: Card created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+
+    put:
+      tags:
+        - Card Management
+      summary: Put cards
+      description: Update card settings and preferences.
+      operationId: putCards
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardId:
+                  type: string
+                  example: "card_9d1e2f3a4b5c6789"
+                name:
+                  type: string
+                  example: "Updated Card Name"
+                status:
+                  type: string
+                  enum: [active, frozen]
+      responses:
+        "200":
+          description: Card updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+
+    delete:
+      tags:
+        - Card Management
+      summary: Delete cards
+      description: Cancel a card permanently.
+      operationId: deleteCards
+      parameters:
+        - name: cardId
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "card_9d1e2f3a4b5c6789"
+      responses:
+        "204":
+          description: Card cancelled successfully
+
+  /api/cards/freeze:
+    post:
+      tags:
+        - Card Management
+      summary: Post cards freeze
+      description: Temporarily freeze a card to prevent transactions.
+      operationId: postCardsFreeze
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardId:
+                  type: string
+                  example: "card_9d1e2f3a4b5c6789"
+      responses:
+        "200":
+          description: Card frozen successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+
+  # User Transactions
+  /api/transactions:
+    get:
+      tags:
+        - User Transactions
+      summary: Get transactions
+      description: Retrieve transaction history for the authenticated user.
+      operationId: getTransactions
+      parameters:
+        - name: cardId
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, completed, failed, cancelled]
+        - name: limit
+          in: query
+          schema:
+            type: string
+            default: "25"
+      responses:
+        "200":
+          description: Transaction history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transactions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+
+  /api/transactions/credits:
+    get:
+      tags:
+        - User Transactions
+      summary: Get transactions credits
+      description: Get the credit balance for the authenticated user.
+      operationId: getTransactionsCredits
+      responses:
+        "200":
+          description: Credit balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: number
+                    example: 123
+                  balance:
+                    type: number
+                    example: 123
+
+  # ENTRO Token
+  /api/entro/balance:
+    get:
+      tags:
+        - ENTRO Token
+      summary: Get ENTRO balance
+      description: Retrieve the current ENTRO token balance for the authenticated user.
+      operationId: getEntroBalance
+      responses:
+        "200":
+          description: ENTRO balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntroBalance'
+
+  /api/entro/rewards:
+    get:
+      tags:
+        - ENTRO Token
+      summary: Get ENTRO rewards
+      description: Retrieve ENTRO token rewards earned through transactions.
+      operationId: getEntroRewards
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: ENTRO rewards retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalEarned:
+                    type: number
+                    format: decimal
+                    example: 25.75
+                  rewards:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        transactionId:
+                          type: string
+                          example: "txn_abc123"
+                        amount:
+                          type: number
+                          format: decimal
+                          example: 0.25
+                        earnedAt:
+                          type: string
+                          format: date-time
+
+  /api/entro/stake:
+    post:
+      tags:
+        - ENTRO Token
+      summary: Post ENTRO stake
+      description: Stake ENTRO tokens to earn rewards.
+      operationId: postEntroStake
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: decimal
+                  example: 100.0
+                duration:
+                  type: string
+                  enum: ["30d", "90d", "180d", "1y"]
+                  example: "90d"
+      responses:
+        "201":
+          description: ENTRO tokens staked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stakeId:
+                    type: string
+                    example: "stake_abc123"
+                  amount:
+                    type: number
+                    format: decimal
+                    example: 100.0
+                  apy:
+                    type: number
+                    format: decimal
+                    example: 8.5
+                  maturityDate:
+                    type: string
+                    format: date-time
+
+  /api/entro/unstake:
+    post:
+      tags:
+        - ENTRO Token
+      summary: Post ENTRO unstake
+      description: Unstake ENTRO tokens and claim rewards.
+      operationId: postEntroUnstake
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stakeId:
+                  type: string
+                  example: "stake_abc123"
+      responses:
+        "200":
+          description: ENTRO tokens unstaked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  amount:
+                    type: number
+                    format: decimal
+                    example: 100.0
+                  rewards:
+                    type: number
+                    format: decimal
+                    example: 7.5
+                  total:
+                    type: number
+                    format: decimal
+                    example: 107.5
+
+  # Funding
+  /api/funding/deposit:
+    post:
+      tags:
+        - Funding
+      summary: Post funding deposit
+      description: Deposit cryptocurrency to fund your Entro Finance account.
+      operationId: postFundingDeposit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cryptocurrency:
+                  type: string
+                  enum: [SOL, USDC, USDT, BTC, ETH]
+                  example: "USDC"
+                amount:
+                  type: number
+                  format: decimal
+                  example: 500.0
+                targetCardId:
+                  type: string
+                  example: "card_9d1e2f3a4b5c6789"
+      responses:
+        "201":
+          description: Deposit initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  depositId:
+                    type: string
+                    example: "dep_abc123"
+                  walletAddress:
+                    type: string
+                    example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
+                  amount:
+                    type: number
+                    format: decimal
+                    example: 500.0
+                  exchangeRate:
+                    type: number
+                    format: decimal
+                    example: 1.0
+                  estimatedUsd:
+                    type: number
+                    format: decimal
+                    example: 500.0
+                  status:
+                    type: string
+                    example: "pending"
+
+  /api/funding/withdraw:
+    post:
+      tags:
+        - Funding
+      summary: Post funding withdraw
+      description: Withdraw funds from your card balance to cryptocurrency.
+      operationId: postFundingWithdraw
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardId:
+                  type: string
+                  example: "card_9d1e2f3a4b5c6789"
+                amount:
+                  type: number
+                  format: decimal
+                  example: 250.0
+                cryptocurrency:
+                  type: string
+                  enum: [SOL, USDC, USDT]
+                  example: "USDC"
+                walletAddress:
+                  type: string
+                  example: "7xKXtg2CW87d97wDnTU5w4a2n3xZp6NV2aJ8r9G4qH3m"
+      responses:
+        "201":
+          description: Withdrawal initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  withdrawalId:
+                    type: string
+                    example: "wth_abc123"
+                  amount:
+                    type: number
+                    format: decimal
+                    example: 250.0
+                  fee:
+                    type: number
+                    format: decimal
+                    example: 2.5
+                  netAmount:
+                    type: number
+                    format: decimal
+                    example: 247.5
+                  status:
+                    type: string
+                    example: "pending"

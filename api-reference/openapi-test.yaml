@@ -1,0 +1,76 @@
+openapi: 3.0.0
+info:
+  title: Entro Finance API Test
+  description: Simple test API for Mintlify compatibility
+  version: 1.0.0
+servers:
+  - url: https://api.entro.finance/v2
+
+paths:
+  /api/keys:
+    get:
+      tags:
+        - API Keys
+      summary: Get API keys
+      description: List all API keys for the authenticated user.
+      operationId: getApiKeys
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: string
+            default: "1"
+        - name: limit
+          in: query
+          description: Number of results per page
+          required: false
+          schema:
+            type: string
+            default: "25"
+      responses:
+        "200":
+          description: List of API keys retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKeys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "key_7b8a9c0d1e2f3456"
+                        name:
+                          type: string
+                          example: "Production API Key"
+                        key:
+                          type: string
+                          example: "sk_live_...f3456"
+                        permissions:
+                          type: array
+                          items:
+                            type: string
+                          example: ["cards:read", "cards:write", "transactions:read"]
+                        createdAt:
+                          type: string
+                          format: date-time
+                        status:
+                          type: string
+                          enum: [active, expired, revoked]
+                  elements:
+                    type: number
+                    example: 5
+                  total:
+                    type: number
+                    example: 42
+                  page:
+                    type: number
+                    example: 1
+                  limit:
+                    type: number
+                    example: 25
