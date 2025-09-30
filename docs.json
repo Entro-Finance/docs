@@ -104,7 +104,7 @@
       {
         "tab": "API REFERENCE",
         "icon": "server-stack",
-        "openapi": "api-reference/openapi.yaml",
+        "openapi": "api-reference/openapi-test.yaml",
         "groups": [
           {
             "group": "Introduction",
