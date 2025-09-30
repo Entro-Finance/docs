@@ -30,63 +30,61 @@
       "url": "https://github.com/Entro-Finance"
     }
   ],
-  "navigation": {
-    "docs": [
-      {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "getting-started/what-is-entro",
-          "getting-started/quickstart"
-        ]
-      },
-      {
-        "group": "How Entro Works",
-        "pages": [
-          "how-it-works/overview",
-          "how-it-works/card-system",
-          "how-it-works/payment-processing",
-          "how-it-works/security-infrastructure",
-          "how-it-works/global-network"
-        ]
-      },
-      {
-        "group": "ENTRO Tokenomics",
-        "pages": [
-          "tokenomics/entro-token",
-          "tokenomics/utility",
-          "tokenomics/distribution",
-          "tokenomics/buyback-mechanism"
-        ]
-      },
-      {
-        "group": "Use Cases",
-        "pages": [
-          "use-cases/data-transformation",
-          "use-cases/cross-border-payments",
-          "use-cases/merchant-integration",
-          "use-cases/enterprise-solutions"
-        ]
-      },
-      {
-        "group": "Investor",
-        "pages": [
-          "investor/value-proposition",
-          "investor/market-analysis",
-          "investor/financial-model",
-          "investor/roadmap"
-        ]
-      },
-      {
-        "group": "Other",
-        "pages": [
-          "other/team",
-          "other/official-links",
-          "other/disclaimer",
-          "other/terms-of-service",
-          "other/privacy-policy"
-        ]
-      }
-    ]
-  }
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "index",
+        "getting-started/what-is-entro",
+        "getting-started/quickstart"
+      ]
+    },
+    {
+      "group": "How Entro Works",
+      "pages": [
+        "how-it-works/overview",
+        "how-it-works/card-system",
+        "how-it-works/payment-processing",
+        "how-it-works/security-infrastructure",
+        "how-it-works/global-network"
+      ]
+    },
+    {
+      "group": "ENTRO Tokenomics",
+      "pages": [
+        "tokenomics/entro-token",
+        "tokenomics/utility",
+        "tokenomics/distribution",
+        "tokenomics/buyback-mechanism"
+      ]
+    },
+    {
+      "group": "Use Cases",
+      "pages": [
+        "use-cases/data-transformation",
+        "use-cases/cross-border-payments",
+        "use-cases/merchant-integration",
+        "use-cases/enterprise-solutions"
+      ]
+    },
+    {
+      "group": "Investor",
+      "pages": [
+        "investor/value-proposition",
+        "investor/market-analysis",
+        "investor/financial-model",
+        "investor/roadmap"
+      ]
+    },
+    {
+      "group": "Other",
+      "pages": [
+        "other/team",
+        "other/official-links",
+        "other/disclaimer",
+        "other/terms-of-service",
+        "other/privacy-policy"
+      ]
+    }
+  ]
 }
