@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Entro Finance API
-  description: Professional cryptocurrency card platform API for managing virtual and physical cards, transactions, and token operations
+  description: Professional cryptocurrency card platform API for managing virtual cards, transactions, and token operations
   version: 2.1.0
   contact:
     name: Entro Finance API Support
