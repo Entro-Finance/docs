@@ -22,22 +22,25 @@
       "url": "https://entro.finance"
     }
   ],
-  "navigation": [
-    {
-      "group": "Documentation",
-      "pages": [
-        "introduction",
-        "the-problem",
-        "our-solution",
-        "what-makes-us-different",
-        "technical-approach",
-        "entro-token",
-        "benefits-for-users",
-        "roadmap",
-        "conclusion"
-      ]
-    }
-  ],
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "DOCUMENTATION",
+        "icon": "document-text",
+        "pages": [
+          "introduction",
+          "the-problem",
+          "our-solution",
+          "what-makes-us-different",
+          "technical-approach",
+          "entro-token",
+          "benefits-for-users",
+          "roadmap",
+          "conclusion"
+        ]
+      }
+    ]
+  },
   "styling": {
     "eyebrows": "breadcrumbs"
   },
