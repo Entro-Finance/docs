@@ -22,50 +22,6 @@ The authorization process begins when a cardholder initiates a payment. Our syst
 
 This entire process completes in under 400 milliseconds, matching traditional card processing speeds.
 
-## Currency Conversion Engine
-
-### Real-Time Exchange Rates
-
-Our proprietary conversion engine maintains real-time exchange rates across multiple liquidity sources:
-
-- **Primary Sources**: Raydium, Orca, Jupiter aggregator
-- **Backup Sources**: Centralized exchange price feeds
-- **Oracle Integration**: Pyth Network and Switchboard for price verification
-
-### Zero-Slippage Guarantee
-
-We lock exchange rates at the moment of transaction initiation:
-
-```javascript
-class RateLockManager {
-  constructor() {
-    this.locks = new Map();
-    this.lockDuration = 30000; // 30 seconds
-  }
-
-  async lockRate(transactionId, fromToken, toFiat, amount) {
-    const rate = await this.getCurrentRate(fromToken, toFiat);
-    const lockedUntil = Date.now() + this.lockDuration;
-    
-    this.locks.set(transactionId, {
-      rate,
-      amount,
-      fromToken,
-      toFiat,
-      lockedUntil,
-      fiatAmount: amount * rate
-    });
-    
-    return {
-      transactionId,
-      rate,
-      fiatAmount: amount * rate,
-      validUntil: lockedUntil
-    };
-  }
-}
-```
-
 ## Settlement Mechanisms
 
 ### Merchant Settlement
