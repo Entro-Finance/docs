@@ -28,6 +28,14 @@
         "tab": "DOCUMENTATION",
         "icon": "document-text",
         "pages": [
+          {
+            "name": "🌐 Website",
+            "href": "https://entro.finance"
+          },
+          {
+            "name": "💻 GitHub",
+            "href": "https://github.com/Entro-Finance"
+          },
           "introduction",
           "the-problem",
           "our-solution",
