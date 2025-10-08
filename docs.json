@@ -100,12 +100,6 @@
             ]
           }
         ]
-      },
-      {
-        "tab": "API REFERENCE",
-        "icon": "server-stack",
-        "openapi": "api-reference/openapi.yaml",
-        "groups": []
       }
     ]
   },
