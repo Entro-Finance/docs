@@ -27,58 +27,16 @@
       {
         "tab": "DOCUMENTATION",
         "icon": "document-text",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "index",
-              "getting-started/what-is-entro",
-              "getting-started/quickstart"
-            ]
-          },
-          {
-            "group": "System Overview",
-            "pages": [
-              "how-it-works/overview",
-              "how-it-works/card-system",
-              "how-it-works/payment-processing",
-              "how-it-works/global-network"
-            ]
-          },
-          {
-            "group": "ENTRO Tokenomics",
-            "pages": [
-              "tokenomics/entro-token",
-              "tokenomics/utility",
-              "tokenomics/buyback-mechanism"
-            ]
-          },
-          {
-            "group": "Use Cases",
-            "pages": [
-              "use-cases/data-transformation",
-              "use-cases/cross-border-payments"
-            ]
-          },
-          {
-            "group": "Deep Dive",
-            "pages": [
-              "whitepaper/vision",
-              "whitepaper/tokenomics",
-              "whitepaper/security",
-              "whitepaper/roadmap"
-            ]
-          },
-          {
-            "group": "Other",
-            "pages": [
-              "other/team",
-              "other/official-links",
-              "other/disclaimer",
-              "other/terms-of-service",
-              "other/privacy-policy"
-            ]
-          }
+        "pages": [
+          "introduction",
+          "the-problem",
+          "our-solution",
+          "what-makes-us-different",
+          "technical-approach",
+          "entro-token",
+          "benefits-for-users",
+          "roadmap",
+          "conclusion"
         ]
       }
     ]
