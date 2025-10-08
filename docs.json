@@ -42,7 +42,6 @@
               "how-it-works/overview",
               "how-it-works/card-system",
               "how-it-works/payment-processing",
-              "how-it-works/security-infrastructure",
               "how-it-works/global-network"
             ]
           },
@@ -51,7 +50,6 @@
             "pages": [
               "tokenomics/entro-token",
               "tokenomics/utility",
-              "tokenomics/distribution",
               "tokenomics/buyback-mechanism"
             ]
           },
@@ -74,7 +72,6 @@
               "whitepaper/introduction",
               "whitepaper/vision",
               "whitepaper/tokenomics",
-              "whitepaper/distribution",
               "whitepaper/security",
               "whitepaper/partnerships",
               "whitepaper/roadmap"
