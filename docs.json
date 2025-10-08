@@ -63,11 +63,9 @@
           {
             "group": "Deep Dive",
             "pages": [
-              "whitepaper/introduction",
               "whitepaper/vision",
               "whitepaper/tokenomics",
               "whitepaper/security",
-              "whitepaper/partnerships",
               "whitepaper/roadmap"
             ]
           },
