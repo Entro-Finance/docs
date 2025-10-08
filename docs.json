@@ -59,17 +59,12 @@
             "group": "Use Cases",
             "pages": [
               "use-cases/data-transformation",
-              "use-cases/cross-border-payments",
-              "use-cases/merchant-integration",
-              "use-cases/enterprise-solutions"
+              "use-cases/cross-border-payments"
             ]
           },
           {
             "group": "Investor",
             "pages": [
-              "investor/value-proposition",
-              "investor/market-analysis",
-              "investor/financial-model",
               "investor/roadmap"
             ]
           },
@@ -78,12 +73,9 @@
             "pages": [
               "whitepaper/introduction",
               "whitepaper/vision",
-              "whitepaper/architecture",
               "whitepaper/tokenomics",
               "whitepaper/distribution",
               "whitepaper/security",
-              "whitepaper/scalability",
-              "whitepaper/governance",
               "whitepaper/partnerships",
               "whitepaper/roadmap"
             ]
