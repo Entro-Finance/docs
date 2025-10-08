@@ -61,12 +61,6 @@
             ]
           },
           {
-            "group": "Investor",
-            "pages": [
-              "investor/roadmap"
-            ]
-          },
-          {
             "group": "Deep Dive",
             "pages": [
               "whitepaper/introduction",
